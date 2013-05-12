@@ -21,16 +21,18 @@ from eventq import eventQ
 from twilio.rest import TwilioRestClient
 from twilio import twiml
 from dbmanage import sqlitedb
+import ConfigParser
 
-define("port", default=7776, help="run on the given port", type=int)
-define('baseurl', default='http://hoge.example.com:7776', help='callback url')
-define('from_', default='+81', help='phone number call from')
-define('to', default='+81', help='destination phone number')
-define('account', default='hoge', help='your account of twilio')
-define('token', default='hoge', help='your token of twilio')
-define('initdb', default=False, help='create table', type=bool)
-define('resqserver', default='localhost', help='ResQ redis server')
-define('resqport', default=6379, help='ResQ redis port', type=int)
+conf = ConfigParser.SafeConfigParser()
+conf.read('settings.ini')
+options_baseurl = conf.get('Tornado', 'baseurl')
+options_port    = conf.get('Tornado', 'port')
+options_from_   = conf.get('Twilio', 'from_')
+options_to      = conf.get('Twilio', 'to')
+options_account = conf.get('Twilio', 'account')
+options_token   = conf.get('Twilio', 'token')
+options_resqserver = conf.get('ResQ', 'server')
+options_resqport   = conf.get('ResQ', 'port')
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -38,7 +40,6 @@ class Application(tornado.web.Application):
             (r'/call', CallHandler),
             (r'/status', StatusHandler),
             (r'/callresponse', CallResponseHandler),
-            (r'/', EventIndexHandler),
             (r'/event', EventHandler),
         ]
         settings = dict(
@@ -52,8 +53,8 @@ class Application(tornado.web.Application):
 
 class BaseHandler(tornado.web.RequestHandler):
     def get_twilio(self):
-        account = '%s' % options.account
-        token = '%s' % options.token
+        account = '%s' % options_account
+        token = '%s' % options_token
         client = TwilioRestClient(account, token)
         return client
 
@@ -84,9 +85,15 @@ class EventHandler(BaseHandler):
             latesttime = 'init'
             lateststatus = 'init'
             result = db.callregister(eventid, numorder, ghid, name, telno, callid, attempt, latesttime, lateststatus)
-        r = ResQ(server="%s:%s" % (options.resqserver, options.resqport))
+        r = ResQ(server="%s:%s" % (options_resqserver, options_resqport))
         r.enqueue(eventQ, eventid)
-        self.write('OK')
+        response = '{\"success\":\"true\",\"eventid\":\"123\"}'
+        self.set_header("Content-Type", "application/json;charset=utf-8")
+        self.write(response)
+
+    def get(self):
+        result = 'OK'
+        self.render("eventhandler.html", result=result)
 
 class CallHandler(BaseHandler):
     def post(self):
@@ -104,7 +111,7 @@ class CallHandler(BaseHandler):
         status = 'init'
         result = db.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, message, headid, footid)
         self.write('OK')
-        #call = self.get_twilio().calls.create(to='%s' % options.to, from_='%s' % options.from_, url='%s/callresponse' % options.baseurl)
+        #call = self.get_twilio().calls.create(to='%s' % options_to, from_='%s' % options_from_, url='%s/callresponse' % options_baseurl)
         #self.write('OK callsid=%s' % call.sid)
 
     def get(self):
@@ -117,7 +124,7 @@ class CallResponseHandler(BaseHandler):
         text1 = '<?xml version="1.0" encoding="UTF-8"?>\n'
         text2 = '<Response><Gather action=\"./status\" method=\"post\" timeout=\"15\">'
         text3 = '<Say voice=\"woman\" language=\"ja-jp\" loop=\"2\">'
-        text4 = 'こちらは、おじぞうさんです。アラートを検知しました。サーバーめいは、hogehoge。Socket timeout after 10 secondsです。対応できる場合は1を、できない場合は2をプッシュしてください。'
+        text4 = 'こちらは、バリスタです。アラートを検知しました。サーバーめいは、hoge.example.com。Socket timeout after 10 secondsです。対応できる場合は1を、できない場合は2をプッシュしてからシャープをプッシュしてください。'
         text5 = '</Say></Gather><Say voice=\"woman\" language=\"ja-jp\" loop=\"1\">プッシュ操作が確認できませんでした。</Say></Response>'
         self.write('%s%s%s%s%s' % (text1, text2, text3, text4, text5))
 
@@ -148,19 +155,14 @@ class StatusHandler(BaseHandler):
         print CallStatus
         self.write('%s' % CallSid)
 
-class EventIndexHandler(BaseHandler):
-    def get(self):
-        print 'hoge'
-        self.render("index.html")
-
 def main():
     tornado.options.parse_command_line()
-    print options.initdb
-    if options.initdb == True:
-        db = sqlitedb()
-        db.initdb()
+    #print options.initdb
+    #if options.initdb == True:
+    db = sqlitedb()
+    db.initdb()
     http_server = tornado.httpserver.HTTPServer(Application())
-    http_server.listen(options.port)
+    http_server.listen(options_port)
     tornado.ioloop.IOLoop.instance().start()
 
 if __name__ == "__main__":
