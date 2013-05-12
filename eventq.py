@@ -15,7 +15,7 @@ resqport = conf.get('ResQ', 'port')
 
 class eventQ(object):
 
-    queue = "ojizosanEvent"
+    queue = "baristaEvent"
 
     @staticmethod
     def perform(eventid):

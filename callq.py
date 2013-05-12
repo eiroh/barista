@@ -6,7 +6,7 @@ from dbmanage import sqlitedb
 
 class callQ(object):
 
-    queue = "ojizosanCall"
+    queue = "baristaCall"
 
     @staticmethod
     def perform(eventid):

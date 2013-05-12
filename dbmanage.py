@@ -13,15 +13,18 @@ from tornado.options import define, options
 from datetime import datetime
 import json
 import sqlite3
+import ConfigParser
 
-define('dbpath', default='./db', help='sqlite db path')
+conf = ConfigParser.SafeConfigParser()
+conf.read('settings.ini')
+options_dbpath = conf.get('MySQL', 'dbpath')
 
 class sqlitedb():
     #def __init__(self):
     #    print 'sqlitedb __init__'
 
     def _dbmanager(self, query):
-        path = options.dbpath
+        path = options_dbpath
         connection = sqlite3.connect(path)
         cursorobj = connection.cursor()
         try:
@@ -34,11 +37,14 @@ class sqlitedb():
         return result
 
     def initdb(self):
-        query = ''' create table event (eventid, status, testflg, hostname, operator, calltype, frequency, message, headid, footid, lastnum) ''';
-        self._dbmanager(query)
-        query = ''' create table call (eventid, numorder, ghid, name, telno, callid, attempt, latesttime, lateststatus) ''';
-        self._dbmanager(query)
-        return 'OK'
+        result = os.path.exists(options_dbpath)
+        print 'initdb %s' % result
+        if result == False:
+            query = ''' create table event (eventid, status, testflg, hostname, operator, calltype, frequency, message, headid, footid, lastnum) ''';
+            self._dbmanager(query)
+            query = ''' create table call (eventid, numorder, ghid, name, telno, callid, attempt, latesttime, lateststatus) ''';
+            self._dbmanager(query)
+            return 'OK'
 
     def geteventid(self):
         millis = int(round(time.time() * 1000))
