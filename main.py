@@ -68,7 +68,7 @@ class EventHandler(BaseHandler):
         message = self.get_argument('message')
         headid = self.get_argument('headid')
         footid = self.get_argument('footid')
-        lastnum = self.get_argument('lastnum')
+        lastnum = 0
         addressee = self.request.arguments['addressee']
         db = sqlitedb()
         eventid = db.geteventid()
