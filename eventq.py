@@ -9,21 +9,18 @@ import ConfigParser
 
 conf = ConfigParser.SafeConfigParser()
 conf.read('settings.ini')
-
 resqserver = conf.get('ResQ', 'server')
 resqport = conf.get('ResQ', 'port')
 
 class eventQ(object):
-
     queue = "baristaEvent"
-
     @staticmethod
     def perform(eventid):
-
         print (eventid)
         db = sqlitedb()
         eventrec = db.getactiveevent()
+        print 'activeevent=%s' % eventrec
         for event in eventrec:
-            print event
+            print event[0]
             r = ResQ(server="%s:%s" % (resqserver, resqport))
-            r.enqueue(callQ, event)
+            r.enqueue(callQ, event[0])
