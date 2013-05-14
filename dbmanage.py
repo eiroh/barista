@@ -20,8 +20,6 @@ conf.read('settings.ini')
 options_dbpath = conf.get('MySQL', 'dbpath')
 
 class sqlitedb():
-    #def __init__(self):
-    #    print 'sqlitedb __init__'
 
     def _dbmanager(self, query):
         path = options_dbpath
@@ -62,6 +60,13 @@ class sqlitedb():
         return 'OK'
 
     def getactiveevent(self):
-        query = ''' select eventid from event where status != 9''';
+        query = ''' select eventid from event where status = '1' or status = '2' ''';
+        result = self._dbmanager(query)
+        return result
+
+    def getactivecall(self, eventid):
+        query = ''' select ghid from call where eventid == '%s' and (lateststatus == '1' or lateststatus == '2') ''' %(eventid);
+        #print 'getactivscall eventid=%s' % eventid
+        #query = ''' select ghid from call where eventid = '%s' ''' %(eventid);
         result = self._dbmanager(query)
         return result
