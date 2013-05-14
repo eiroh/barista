@@ -22,6 +22,7 @@ from twilio.rest import TwilioRestClient
 from twilio import twiml
 from dbmanage import sqlitedb
 import ConfigParser
+from twiliomanage import twiliomanage
 
 conf = ConfigParser.SafeConfigParser()
 conf.read('settings.ini')
@@ -72,7 +73,7 @@ class EventHandler(BaseHandler):
         addressee = self.request.arguments['addressee']
         db = sqlitedb()
         eventid = db.geteventid()
-        status = 'init'
+        status = 1
         result = db.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, message, headid, footid, lastnum)
         for record in addressee:
             param = record.split(':')
@@ -80,10 +81,10 @@ class EventHandler(BaseHandler):
             ghid = param[1]
             telno = param[2]
             name = param[3]
-            callid = 'init'
+            callid = 0
             attempt = 0
-            latesttime = 'init'
-            lateststatus = 'init'
+            latesttime = 0
+            lateststatus = 1
             result = db.callregister(eventid, numorder, ghid, name, telno, callid, attempt, latesttime, lateststatus)
         r = ResQ(server="%s:%s" % (options_resqserver, options_resqport))
         r.enqueue(eventQ, eventid)
@@ -111,54 +112,37 @@ class CallHandler(BaseHandler):
         status = 'init'
         result = db.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, message, headid, footid)
         self.write('OK')
-        #call = self.get_twilio().calls.create(to='%s' % options_to, from_='%s' % options_from_, url='%s/callresponse' % options_baseurl)
-        #self.write('OK callsid=%s' % call.sid)
 
     def get(self):
         sid = self.get_argument('sid')
-        call = self.get_twilio().calls.get(sid)
-        self.write('status=%s start_time=%s' % (call.status, call.start_time))
+        tw = twiliomanage()
+        result = tw.get_record(sid)
+        self.write(result)
 
 class CallResponseHandler(BaseHandler):
     def post(self):
-        text1 = '<?xml version="1.0" encoding="UTF-8"?>\n'
-        text2 = '<Response><Gather action=\"./status\" method=\"post\" timeout=\"15\">'
-        text3 = '<Say voice=\"woman\" language=\"ja-jp\" loop=\"2\">'
-        text4 = 'こちらは、バリスタです。アラートを検知しました。サーバーめいは、hoge.example.com。Socket timeout after 10 secondsです。対応できる場合は1を、できない場合は2をプッシュしてからシャープをプッシュしてください。'
-        text5 = '</Say></Gather><Say voice=\"woman\" language=\"ja-jp\" loop=\"1\">プッシュ操作が確認できませんでした。</Say></Response>'
-        self.write('%s%s%s%s%s' % (text1, text2, text3, text4, text5))
+        tw = twiliomanage()
+        result = tw.announce()
+        self.write(result)
 
 class StatusHandler(BaseHandler):
     def post(self):
         print 'StatusHandler method=post'
-        CallSid = self.get_argument('CallSid')
-        print CallSid
-        CallStatus = self.get_argument('CallStatus')
-        print CallStatus
         Digits = self.get_argument('Digits')
         print Digits
-        head = '<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n'
-        text = 'プッシュ操作なし'
-        if Digits != '' and Digits == '1':
-            text = '対応できる'
-        elif Digits != '' and Digits == '2':
-            text = '対応できない' 
-        elif Digits != '':
-            text = '無効な番号'
-        self.write('%s<Response><Say voice=\"woman\" language=\"ja-jp\" loop=\"2\">%s、を登録しました。</Say></Response>' % (head, text))
+        tw = twiliomanage()
+        result = tw.response(Digits)
+        self.write(result)
 
     def get(self):
         print 'StatusHandler method=get'
         CallSid = self.get_argument('CallSid')
-        print CallSid
-        CallStatus = self.get_argument('CallStatus')
-        print CallStatus
-        self.write('%s' % CallSid)
+        tw = twilio()
+        result = tw.get_record(CallSid)
+        self.write(result)
 
 def main():
     tornado.options.parse_command_line()
-    #print options.initdb
-    #if options.initdb == True:
     db = sqlitedb()
     db.initdb()
     http_server = tornado.httpserver.HTTPServer(Application())
