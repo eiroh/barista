@@ -46,10 +46,62 @@ Response of processing with errors.
 
 ##Retrieve Answer Logs
 ###Request Url
+    http://example.com/api/v1/call
+    It accepts GET method.
 ###Request Parameters
+|parameter|value/example|description|
+|:-------:|:-----------:|:---------:|
+|eventid|xxxxxxxxxxxxxxxx|-|
+
 ###Sample Request Url
+    curl http://example.com/api/v1/call?eventid=xxxxxxxxxxxxxxxxxxxxxxx
 ###Response Field
+    [{
+     "success":"true",
+     "type":"1",
+     "frequency":"10",
+     "headid":"2",
+     "footid":"1",
+     "headmsg":"",
+     "announce":"",
+     "footmsg":"",
+     "eventstatus":"1",
+     "result":[
+      {
+       "gsid":"jirou",
+       "order":"1",
+       "telno","0000000",
+       "name":"次郎",
+       "numofcall":"1",
+       "latestcall":"1367890211",
+       "status":"1",
+       "answer":""
+      },
+      {
+       "gsid":"saburou",
+       "order":"2",
+       "telno","0000000",
+       "name":"三郎",
+       "numofcall":"1",
+       "latestcall":"1367890311",
+       "status":"1",
+       "answer":"2"
+      },
+      {
+       "gsid":"shirou",
+       "order":"3",
+       "telno","0000000",
+       "name":"四郎",
+       "numofcall":"1",
+       "latestcall":"1367890411",
+       "status":"1",
+       "answer":"1"
+      }
+      ]
+    }]
+
 ###Error Code
+    {"success":"false","error":"xxx"}
 
 ##AUTHOR
 Hidenori Suzuki
