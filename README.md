@@ -51,27 +51,28 @@ Response of processing with errors.
 ###Request Parameters
 |parameter|value/example|description|
 |:-------:|:-----------:|:---------:|
-|eventid|xxxxxxxxxxxxxxxx|-|
+|eventid|xxxxxxxxxxxxxxxx|specify eventid which is a response of call api|
 
 ###Sample Request Url
     curl http://example.com/api/v1/call?eventid=xxxxxxxxxxxxxxxxxxxxxxx
 ###Response Field
+response example of success
     [{
      "success":"true",
      "type":"1",
      "frequency":"10",
      "headid":"2",
      "footid":"1",
-     "headmsg":"",
-     "announce":"",
-     "footmsg":"",
+     "headmsg":"障害を検知しました。サーバー名は、example.com。",
+     "announce":"Socket timeout after 10 secondsです。",
+     "footmsg":"対応できる場合は1を、できない場合は2を押してください。",
      "eventstatus":"1",
      "result":[
       {
        "gsid":"jirou",
        "order":"1",
        "telno","0000000",
-       "name":"次郎",
+       "name":"鈴木次郎",
        "numofcall":"1",
        "latestcall":"1367890211",
        "status":"1",
@@ -81,7 +82,7 @@ Response of processing with errors.
        "gsid":"saburou",
        "order":"2",
        "telno","0000000",
-       "name":"三郎",
+       "name":"鈴木三郎",
        "numofcall":"1",
        "latestcall":"1367890311",
        "status":"1",
@@ -91,7 +92,7 @@ Response of processing with errors.
        "gsid":"shirou",
        "order":"3",
        "telno","0000000",
-       "name":"四郎",
+       "name":"鈴木四郎",
        "numofcall":"1",
        "latestcall":"1367890411",
        "status":"1",
@@ -100,10 +101,22 @@ Response of processing with errors.
       ]
     }]
 
-###Error Code
+response example woth error
     {"success":"false","error":"xxx"}
+    
+###Error Code
+####eventstatus
+|code|meaning|-|
+|:--:|:-----:|::|
+|1|before calling|-|
+|2|during calling|-|
+|3|finished|-|
+|99|system error, unknown error|-|
+
+####status
 
 ##AUTHOR
+
 Hidenori Suzuki
 
 ##LICENSE
