@@ -103,8 +103,7 @@ response example of success
 
 response example woth error
     {"success":"false","error":"xxx"}
-    
-###Error Code
+
 ####eventstatus
 |code|meaning|-|
 |:--:|:-----:|::|
@@ -114,6 +113,26 @@ response example woth error
 |99|system error, unknown error|-|
 
 ####status
+|code|meaning|-|
+|:--:|:-----:|::|
+|1|before calling|-|
+|2|during calling|-|
+|3|finished|-|
+|99|system error, unknown error|-|
+
+####answer
+|code|meaning|-|
+|:--:|:-----:|::|
+|0|no answer|-|
+|1|answered positive|-|
+|2|answered negative|-|
+
+###Error Code
+|code|meaning|-|
+|:--:|:-----:|::|
+|1|-|-|
+|2|-|-|
+|99|system error, unknown error|-|
 
 ##AUTHOR
 
