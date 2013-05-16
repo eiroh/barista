@@ -56,7 +56,8 @@ Response of processing with errors.
 ###Sample Request Url
     curl http://example.com/api/v1/call?eventid=xxxxxxxxxxxxxxxxxxxxxxx
 ###Response Field
-response example of success
+response example of success  
+
     [{
      "success":"true",
      "type":"1",
@@ -101,7 +102,7 @@ response example of success
       ]
     }]
 
-response example woth error
+response example with error
     {"success":"false","error":"xxx"}
 
 ####eventstatus
