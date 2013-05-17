@@ -8,7 +8,7 @@ To have log of answer, It can call person who don't answer.
 ##Make Call
 ###Request Url
     http://example.com/api/v1/call
-It need POST method.
+    It need POST method.
 ###Request Parameters
 |parameters|value/example|description|
 |:--------:|:-----------:|:----------|
