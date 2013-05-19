@@ -60,37 +60,101 @@ class BaseHandler(tornado.web.RequestHandler):
         return client
 
 class EventHandler(BaseHandler):
+
+    def checkinput(self, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, addressee):
+        if testflg != '0' and testflg != '1':
+           logging.info('input parameter error testflg')
+           return False
+        if hostname == '':
+           logging.info('input parameter error hostname')
+           return False
+        if operator == '':
+           logging.info('input parameter error operator')
+           return False
+        if calltype != '1' and calltype != '2':
+           logging.info('input parameter error calltype')
+           return False
+        if int(frequency) > 10:
+           logging.info('input parameter error frequency')
+           return False
+        if language != 'en' and language != 'ja-jp':
+           logging.info('input parameter error language')
+           return False
+        if message == '':
+           logging.info('input parameter error message')
+           return False
+        if headid != '1' and headid != '2':
+           logging.info('input parameter error headid')
+           return False
+        if footid != '1' and footid != '2':
+           logging.info('input parameter error footid')
+           return False
+        for record in addressee:
+           param = record.split(':')
+           if len(param) != 5:
+               logging.info('input parameter error addressee')
+               return False
+           numorder = param[0]
+           if int(numorder) > 100:
+               logging.info('input parameter error numorder')
+               return False
+           ghid = param[1]
+           if ghid == '':
+               logging.info('input parameter error ghid')
+               return False
+           telno = param[2]
+           if telno == '':
+               logging.info('input parameter error telno')
+               return False
+           name = param[3]
+           if name == '':
+               logging.info('input parameter error name')
+               return False
+           sleep = param[4]
+           if int(sleep) > 1800:
+               logging.info('input parameter error sleep')
+               return False
+        return True
+
     def post(self):
         testflg = self.get_argument('testflg')
         hostname = self.get_argument('hostname')
         operator = self.get_argument('operator')
         calltype = self.get_argument('calltype')
         frequency = self.get_argument('frequency')
+        language = self.get_argument('language')
         message = self.get_argument('message')
         headid = self.get_argument('headid')
         footid = self.get_argument('footid')
-        lastnum = 0
         addressee = self.request.arguments['addressee']
-        db = sqlitedb()
-        eventid = db.geteventid()
-        status = 1
-        result = db.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, message, headid, footid, lastnum)
-        for record in addressee:
-            param = record.split(':')
-            numorder = param[0]
-            ghid = param[1]
-            telno = param[2]
-            name = param[3]
-            callid = 0
-            attempt = 0
-            latesttime = 0
-            lateststatus = 1
-            result = db.callregister(eventid, numorder, ghid, name, telno, callid, attempt, latesttime, lateststatus)
-        r = ResQ(server="%s:%s" % (options_resqserver, options_resqport))
-        r.enqueue(eventQ, eventid)
-        response = '{\"success\":\"true\",\"eventid\":\"123\"}'
-        self.set_header("Content-Type", "application/json;charset=utf-8")
-        self.write(response)
+        result = self.checkinput(testflg, hostname, operator, calltype, frequency, language, message, headid, footid, addressee)
+        if result == False:
+            response = '{\"success\":\"false\",\"error\":\"1\"}'
+            self.set_header("Content-Type", "application/json;charset=utf-8")
+            self.write(response)
+        else:
+            lastnum = 0
+            db = sqlitedb()
+            eventid = db.geteventid()
+            status = 1
+            result = db.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum)
+            for record in addressee:
+                param = record.split(':')
+                numorder = param[0]
+                ghid = param[1]
+                telno = param[2]
+                name = param[3]
+                sleep = param[4]
+                callid = 0
+                attempt = 0
+                latesttime = 0
+                lateststatus = 1
+                result = db.callregister(eventid, numorder, ghid, name, telno, sleep, callid, attempt, latesttime, lateststatus)
+            r = ResQ(server="%s:%s" % (options_resqserver, options_resqport))
+            r.enqueue(eventQ, eventid)
+            response = '{\"success\":\"true\",\"eventid\":\"%s\"}' % eventid
+            self.set_header("Content-Type", "application/json;charset=utf-8")
+            self.write(response)
 
     def get(self):
         result = 'OK'
