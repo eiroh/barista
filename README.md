@@ -26,7 +26,7 @@ To have log of answer, It can call person who don't answer.
 ###Sample Request Url
     curl -d 'testflg=1' -d 'hostname=example.com' -d 'operator=ichiro' -d 'calltype=1' -d 'frequency=10' 
     -d 'language=ja-jp' -d 'message=Socket timeout after 10 secondsです。' -d 'headid=2' -d 'footif=1' 
-    -d 'addressee=1:jirou:0000000:次郎' -d 'addressee=2:saburou:0000000:三郎' -d 'addressee=3:shirou:0000000:四郎' 
+    -d 'addressee=1:jirou:0000000:次郎:1' -d 'addressee=2:saburou:0000000:三郎:2' -d 'addressee=3:shirou:0000000:四郎:3' 
     http://example.com/api/v1/call
 
 ###Response Field
