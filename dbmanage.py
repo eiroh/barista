@@ -38,9 +38,9 @@ class sqlitedb():
         result = os.path.exists(options_dbpath)
         print 'initdb %s' % result
         if result == False:
-            query = ''' create table event (eventid, status, testflg, hostname, operator, calltype, frequency, message, headid, footid, lastnum) ''';
+            query = ''' create table event (eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum) ''';
             self._dbmanager(query)
-            query = ''' create table call (eventid, numorder, ghid, name, telno, callid, attempt, latesttime, lateststatus) ''';
+            query = ''' create table call (eventid, numorder, ghid, name, telno, sleep, callid, attempt, latesttime, lateststatus) ''';
             self._dbmanager(query)
             return 'OK'
 
@@ -49,24 +49,27 @@ class sqlitedb():
         logging.info(millis)
         return millis
  
-    def eventregister(self, eventid, status, testflg, hostname, operator, calltype, frequency, message, headid, footid, lastnum):
-        query = ''' insert into event (eventid, status, testflg, hostname, operator, calltype, frequency, message, headid, footid, lastnum) values ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s') ''' %(eventid, status, testflg, hostname, operator, calltype, frequency, message, headid, footid, lastnum);
+    def eventregister(self, eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum):
+        query = ''' insert into event (eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum) values ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s') ''' %(eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum);
         self._dbmanager(query)
         return 'OK'
 
-    def callregister(self, eventid, numorder, ghid, name, telno, callid, attempt, latesttime, lateststatus):
-        query = ''' insert into call (eventid, numorder, ghid, name, telno, callid, attempt, latesttime, lateststatus) values ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s') ''' %(eventid, numorder, ghid, name, telno, callid, attempt, latesttime, lateststatus); 
+    def callregister(self, eventid, numorder, ghid, name, telno, sleep, callid, attempt, latesttime, lateststatus):
+        query = ''' insert into call (eventid, numorder, ghid, name, telno, sleep, callid, attempt, latesttime, lateststatus) values ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s') ''' %(eventid, numorder, ghid, name, telno, sleep, callid, attempt, latesttime, lateststatus); 
         self._dbmanager(query)
         return 'OK'
 
     def getactiveevent(self):
-        query = ''' select eventid from event where status = '1' or status = '2' ''';
+        query = ''' select eventid from event where (status = '1' or status = '2') and testflg = '0' ''';
         result = self._dbmanager(query)
         return result
 
     def getactivecall(self, eventid):
-        query = ''' select ghid from call where eventid == '%s' and (lateststatus == '1' or lateststatus == '2') ''' %(eventid);
-        #print 'getactivscall eventid=%s' % eventid
-        #query = ''' select ghid from call where eventid = '%s' ''' %(eventid);
+        query = ''' select * from call where eventid == '%s' and (lateststatus == '1' or lateststatus == '2') order by numorder ''' %(eventid);
+        result = self._dbmanager(query)
+        return result
+
+    def geteventinfo(self, eventid):
+        query = ''' select * from event where eventid = '%s' % eventid ''';
         result = self._dbmanager(query)
         return result
