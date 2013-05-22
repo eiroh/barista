@@ -19,9 +19,9 @@ To have log of answer, It can call person who don't answer.
 |frequency|1,2,3,4,5,6,7,8,9,10|calltype=1 make call repeatedly until at least getting one person's answer|
 |language|en,ja-jp|-|
 |message|Socket time out error after 10 seconds|-|
-|headid|1,2|announcement id of beginning of call|
+|headid|1,2|announcement id of beginning of call. you can define it in settings.ini|
 |footid|1,2|announcement id of end of call|
-|addressee|1:jirou:0000000|order:id:name:interval|
+|addressee|1:jirou:0000000|order\:id:name:interval|
 
 ###Sample Request Url
     curl -d 'testflg=1' -d 'hostname=example.com' -d 'operator=ichiro' -d 'calltype=1' -d 'frequency=10' 
