@@ -12,16 +12,16 @@ To have log of answer, It can call person who don't answer.
 ###Request Parameters
 |parameters|value/example|description|
 |:--------:|:-----------:|:----------|
-|testflg|0,1|0:activate with calling function  1:debug mode.it doesn't call|
-|hostname|example.com|specify hostname|
-|operator|ichiro||
+|testflg|0,1|0:normal, 1:debug mode(it doesn't call)|
+|hostname|example.com|-|
+|operator|ichiro|-|
 |calltype|1,2|1:sequential, 2:paralell|
 |frequency|1,2,3,4,5,6,7,8,9,10|calltype=1 make call repeatedly until at least getting one person's answer|
-|language|||
-|message|||
-|headid|||
-|footid|||
-|addressee|||
+|language|en,ja-jp|-|
+|message|Socket time out error after 10 seconds|-|
+|headid|1,2|announcement id of beginning of call|
+|footid|1,2|announcement id of end of call|
+|addressee|1:jirou:0000000|order:id:name:interval|
 
 ###Sample Request Url
     curl -d 'testflg=1' -d 'hostname=example.com' -d 'operator=ichiro' -d 'calltype=1' -d 'frequency=10' 
