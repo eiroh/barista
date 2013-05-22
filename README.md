@@ -21,7 +21,7 @@ To have log of answer, It can call person who don't answer.
 |message|Socket time out error after 10 seconds|-|
 |headid|1,2|announcement id of beginning of call. you can define it in settings.ini|
 |footid|1,2|announcement id of end of call|
-|addressee|1:jirou:0000000|order\:id:name:interval|
+|addressee|1:jirou:0000000:10|order:userid:name:tel:interval(sec) sleep specified seconds after calling|
 
 ###Sample Request Url
     curl -d 'testflg=1' -d 'hostname=example.com' -d 'operator=ichiro' -d 'calltype=1' -d 'frequency=10' 
