@@ -38,9 +38,9 @@ class sqlitedb():
         result = os.path.exists(options_dbpath)
         print 'initdb %s' % result
         if result == False:
-            query = ''' create table event (eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum) ''';
+            query = ''' create table event (eventid INTEGER, status INTEGER, testflg INTEGER, hostname TEXT, operator TEXT, calltype INTEGER, frequency INTEGER, language TEXT, message TEXT, headid INTEGER, footid INTEGER, lastnum INTEGER) ''';
             self._dbmanager(query)
-            query = ''' create table call (eventid, numorder, ghid, name, telno, sleep, callid, attempt, latesttime, lateststatus) ''';
+            query = ''' create table call (eventid INTEGER, numorder INTEGER, ghid TEXT, name TEXT, telno TEXT, sleep INTEGER, callid INTEGER, attempt INTEGER, latesttime TEXT, lateststatus INTEGER) ''';
             self._dbmanager(query)
             return 'OK'
 
@@ -59,8 +59,15 @@ class sqlitedb():
         self._dbmanager(query)
         return 'OK'
 
+    def insertsid(self, eventid, numorder, ghid, sid):
+        print 'insertsid: eventid=%s,numorder=%s,ghid=%s,sid=%s' % (eventid, numorder, ghid, sid)
+        query = ''' update call set callid='%s', lateststatus='%s' where eventid='%s' and numorder='%s' and ghid='%s' ''' %(sid, '1', eventid, numorder, ghid);
+        self._dbmanager(query)
+        return 'OK'
+
     def getactiveevent(self):
-        query = ''' select eventid from event where (status = '1' or status = '2') and testflg = '0' ''';
+        #query = ''' select eventid from event where (status = '1' or status = '2') and testflg = '0' ''';
+        query = ''' select eventid from event where (status = '1' or status = '2') ''';
         result = self._dbmanager(query)
         return result
 
@@ -70,6 +77,6 @@ class sqlitedb():
         return result
 
     def geteventinfo(self, eventid):
-        query = ''' select * from event where eventid = '%s' % eventid ''';
+        query = ''' select * from event where eventid = '%s' ''' %(eventid);
         result = self._dbmanager(query)
         return result
