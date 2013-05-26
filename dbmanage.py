@@ -14,6 +14,7 @@ from datetime import datetime
 import json
 import sqlite3
 import ConfigParser
+import baristastatus
 
 conf = ConfigParser.SafeConfigParser()
 conf.read('settings.ini')
@@ -24,6 +25,7 @@ class sqlitedb():
     def _dbmanager(self, query):
         path = options_dbpath
         connection = sqlite3.connect(path)
+        connection.row_factory = sqlite3.Row
         cursorobj = connection.cursor()
         try:
             cursorobj.execute(query)
@@ -66,15 +68,22 @@ class sqlitedb():
         return 'OK'
 
     def getactiveevent(self):
-        #query = ''' select eventid from event where (status = '1' or status = '2') and testflg = '0' ''';
-        query = ''' select eventid from event where (status = '1' or status = '2') ''';
+        query = ''' select eventid from event where (status = %s or status = %s) ''' %(baristastatus.EVENT_STATUS['WAITING'], baristastatus.EVENT_STATUS['IN_PROGRESS']);
         result = self._dbmanager(query)
         return result
 
     def getactivecall(self, eventid):
-        query = ''' select * from call where eventid == '%s' and (lateststatus == '1' or lateststatus == '2') order by numorder ''' %(eventid);
+        query = ''' select * from call where eventid == '%s' and (lateststatus == '%s') order by numorder ''' %(eventid, baristastatus.CALL_STATUS['WAITING']);
         result = self._dbmanager(query)
         return result
+
+    def updatestatus(self, eventid, numorder, ghid, status):
+        millis = int(round(time.time() * 1000))
+        query = ''' update call set latesttime ='%s', lateststatus ='%s', attempt = attempt + 1 where eventid='%s' and numorder='%s' and ghid='%s' ''' %(millis, status, eventid, numorder, ghid);
+        result = self._dbmanager(query)
+        query = ''' update event set lastnum ='%s' where eventid='%s' ''' %(numorder, eventid);
+        result = self._dbmanager(query)
+        return 'OK'
 
     def geteventinfo(self, eventid):
         query = ''' select * from event where eventid = '%s' ''' %(eventid);
