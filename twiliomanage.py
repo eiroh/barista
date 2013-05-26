@@ -17,6 +17,7 @@ from twilio.rest import TwilioRestClient
 from twilio import twiml
 import ConfigParser
 from dbmanage import sqlitedb
+import baristastatus
 
 conf = ConfigParser.SafeConfigParser()
 conf.read('settings.ini')
@@ -37,7 +38,7 @@ options_response_nothing  = conf.get('Barista', 'response_nothing')
 options_response_end      = conf.get('Barista', 'response_end')
 options_response_timeout  = conf.get('Barista', 'response_timeout')
 
-class twiliomanage():
+class twiliomanage(sqlitedb):
 
     def get_twilio(self):
         account = '%s' % options_account
@@ -47,24 +48,17 @@ class twiliomanage():
 
     def call(self, eventid, numorder, ghid, name, telno, testflg, hostname, message, headid, footid):
         print 'eventid=%s, numorder=%s, ghid=%s, name=%s, telno=%s, testflg=%s, hostname=%s, message=%s, headid=%s, footid=%s' % (eventid, numorder, ghid, name, telno, testflg, hostname, message, headid, footid)
-        sid = '0'
-        if testflg == 1:
-            sid = '1234567890'
-        else:
+        sid = baristastatus.INITIAL_VALUE['callsid']
+        if testflg == int(baristastatus.DEBUG_FLG['off']):
             call = self.get_twilio().calls.create(to='%s' % options_to, from_='%s' % options_from_, url='%s:%s/callresponse?eventid=%s' % (options_baseurl, options_port, eventid))
-            #call = self.get_twilio().calls.create(to='%s' % telno, from_='%s' % options_from_, url='%s:%s/callresponse?eventid=%s' % (options_baseurl, options_port, eventid))
             sid = call.sid
-        db = sqlitedb()
-        result = db.insertsid(eventid, numorder, ghid, sid)
-        print 'twiliomanage::call'
-        return '0'
+        result = sqlitedb.insertsid(self, eventid, numorder, ghid, sid)
+        return result
 
     def announce(self, eventid):
-        db = sqlitedb()
-        result = db.geteventinfo(eventid)
+        result = sqlitedb.geteventinfo(self, eventid)
         record = result[0]
-        message = record[8].encode('utf-8')
-        print message
+        message = record['message'].encode('utf-8')
         text1 = '<?xml version="1.0" encoding="UTF-8"?>\n'
         text2 = '<Response><Gather action=\"./status\" method=\"post\" timeout=\"10\">'
         text3 = '<Say voice=\"woman\" language=\"ja-jp\" loop=\"2\">'
@@ -74,7 +68,6 @@ class twiliomanage():
         return result
 
     def response(self, digits):
-        print digits
         text = options_response_timeout
         if digits != '' and digits == '1':
             text = options_response_positive
