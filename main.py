@@ -23,6 +23,7 @@ from twilio import twiml
 from dbmanage import sqlitedb
 import ConfigParser
 from twiliomanage import twiliomanage
+import baristastatus
 
 conf = ConfigParser.SafeConfigParser()
 conf.read('settings.ini')
@@ -38,10 +39,10 @@ options_resqport   = conf.get('ResQ', 'port')
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
-            (r'/call', CallHandler),
+            (r'/call', EventHandler),
             (r'/status', StatusHandler),
             (r'/callresponse', CallResponseHandler),
-            (r'/event', EventHandler),
+            #(r'/event', EventHandler),
         ]
         settings = dict(
             template_path=os.path.join(os.path.dirname(__file__), "template"),
@@ -134,10 +135,10 @@ class EventHandler(BaseHandler):
             self.write(response)
         else:
             lastnum = 0
-            db = sqlitedb()
-            eventid = db.geteventid()
-            status = 1
-            result = db.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum)
+            tw = twiliomanage()
+            eventid = tw.geteventid()
+            status = baristastatus.EVENT_STATUS['WAITING'] 
+            result = tw.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum)
             for record in addressee:
                 param = record.split(':')
                 numorder = param[0]
@@ -148,8 +149,8 @@ class EventHandler(BaseHandler):
                 callid = 0
                 attempt = 0
                 latesttime = 0
-                lateststatus = 1
-                result = db.callregister(eventid, numorder, ghid, name, telno, sleep, callid, attempt, latesttime, lateststatus)
+                lateststatus = baristastatus.CALL_STATUS['WAITING']
+                result = tw.callregister(eventid, numorder, ghid, name, telno, sleep, callid, attempt, latesttime, lateststatus)
             r = ResQ(server="%s:%s" % (options_resqserver, options_resqport))
             r.enqueue(eventQ, eventid)
             response = '{\"success\":\"true\",\"eventid\":\"%s\"}' % eventid
@@ -160,28 +161,28 @@ class EventHandler(BaseHandler):
         result = 'OK'
         self.render("eventhandler.html", result=result)
 
-class CallHandler(BaseHandler):
-    def post(self):
-        testflg = self.get_argument('testflg')
-        hostname = self.get_argument('hostname')
-        operator = self.get_argument('operator')
-        calltype = self.get_argument('calltype')
-        frequency = self.get_argument('frequency')
-        message = self.get_argument('message')
-        headid = self.get_argument('headid')
-        footid = self.get_argument('footid')
-        addressee = self.request.arguments['addressee']
-        db = sqlitedb()
-        eventid = db.geteventid()
-        status = 'init'
-        result = db.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, message, headid, footid)
-        self.write('OK')
-
-    def get(self):
-        sid = self.get_argument('sid')
-        tw = twiliomanage()
-        result = tw.get_record(sid)
-        self.write(result)
+#class CallHandler(BaseHandler):
+#    def post(self):
+#        testflg = self.get_argument('testflg')
+#        hostname = self.get_argument('hostname')
+#        operator = self.get_argument('operator')
+#        calltype = self.get_argument('calltype')
+#        frequency = self.get_argument('frequency')
+#        message = self.get_argument('message')
+#        headid = self.get_argument('headid')
+#        footid = self.get_argument('footid')
+#        addressee = self.request.arguments['addressee']
+#        db = sqlitedb()
+#        eventid = db.geteventid()
+#        status = 'init'
+#        result = db.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, message, headid, footid)
+#        self.write('OK')
+#
+#    def get(self):
+#        sid = self.get_argument('sid')
+#        tw = twiliomanage()
+#        result = tw.get_record(sid)
+#        self.write(result)
 
 class CallResponseHandler(BaseHandler):
     def post(self):
