@@ -14,7 +14,7 @@ from datetime import datetime
 import json
 import sqlite3
 import ConfigParser
-import baristastatus
+import define
 
 conf = ConfigParser.SafeConfigParser()
 conf.read('settings.ini')
@@ -68,12 +68,12 @@ class sqlitedb():
         return 'OK'
 
     def getactiveevent(self):
-        query = ''' select eventid from event where (status = %s or status = %s) ''' %(baristastatus.EVENT_STATUS['WAITING'], baristastatus.EVENT_STATUS['IN_PROGRESS']);
+        query = ''' select eventid from event where (status = %s or status = %s) ''' %(define.EVENT_STATUS['WAITING'], define.EVENT_STATUS['IN_PROGRESS']);
         result = self._dbmanager(query)
         return result
 
     def getactivecall(self, eventid):
-        query = ''' select * from call where eventid == '%s' and (lateststatus == '%s') order by numorder ''' %(eventid, baristastatus.CALL_STATUS['WAITING']);
+        query = ''' select * from call where eventid == '%s' and (lateststatus == '%s') order by numorder ''' %(eventid, define.CALL_STATUS['WAITING']);
         result = self._dbmanager(query)
         return result
 
