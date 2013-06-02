@@ -23,7 +23,8 @@ from twilio import twiml
 from dbmanage import sqlitedb
 import ConfigParser
 from twiliomanage import twiliomanage
-import baristastatus
+import define
+from barista import barista
 
 conf = ConfigParser.SafeConfigParser()
 conf.read('settings.ini')
@@ -63,7 +64,7 @@ class BaseHandler(tornado.web.RequestHandler):
 class EventHandler(BaseHandler):
 
     def checkinput(self, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, addressee):
-        if testflg != '0' and testflg != '1':
+        if testflg != define.DEBUG_FLG['off'] and testflg != define.DEBUG_FLG['on']:
            logging.info('input parameter error testflg')
            return False
         if hostname == '':
@@ -72,10 +73,10 @@ class EventHandler(BaseHandler):
         if operator == '':
            logging.info('input parameter error operator')
            return False
-        if calltype != '1' and calltype != '2':
+        if calltype != define.CALL_TYPE['sequential'] and calltype != define.CALL_TYPE['paralell']:
            logging.info('input parameter error calltype')
            return False
-        if int(frequency) > 10:
+        if int(frequency) > int(define.MAX_NUM_OF_CALL):
            logging.info('input parameter error frequency')
            return False
         if language != 'en' and language != 'ja-jp':
@@ -96,7 +97,7 @@ class EventHandler(BaseHandler):
                logging.info('input parameter error addressee')
                return False
            numorder = param[0]
-           if int(numorder) > 100:
+           if int(numorder) > int(define.MAX_NUM_OF_ADDRESSEE):
                logging.info('input parameter error numorder')
                return False
            ghid = param[1]
@@ -112,12 +113,13 @@ class EventHandler(BaseHandler):
                logging.info('input parameter error name')
                return False
            sleep = param[4]
-           if int(sleep) > 1800:
+           if int(sleep) > int(define.MAX_SEC_OF_SLEEP):
                logging.info('input parameter error sleep')
                return False
         return True
 
     def post(self):
+
         testflg = self.get_argument('testflg')
         hostname = self.get_argument('hostname')
         operator = self.get_argument('operator')
@@ -128,33 +130,19 @@ class EventHandler(BaseHandler):
         headid = self.get_argument('headid')
         footid = self.get_argument('footid')
         addressee = self.request.arguments['addressee']
+
+        self.set_header("Content-Type", "application/json;charset=utf-8")
         result = self.checkinput(testflg, hostname, operator, calltype, frequency, language, message, headid, footid, addressee)
         if result == False:
-            response = '{\"success\":\"false\",\"error\":\"1\"}'
-            self.set_header("Content-Type", "application/json;charset=utf-8")
+            response = '{\"success\":\"false\",\"error\":\"%s\"}' % define.ERROR_CODE['parameters']
             self.write(response)
         else:
-            lastnum = 0
-            tw = twiliomanage()
-            eventid = tw.geteventid()
-            status = baristastatus.EVENT_STATUS['WAITING'] 
-            result = tw.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum)
-            for record in addressee:
-                param = record.split(':')
-                numorder = param[0]
-                ghid = param[1]
-                telno = param[2]
-                name = param[3]
-                sleep = param[4]
-                callid = 0
-                attempt = 0
-                latesttime = 0
-                lateststatus = baristastatus.CALL_STATUS['WAITING']
-                result = tw.callregister(eventid, numorder, ghid, name, telno, sleep, callid, attempt, latesttime, lateststatus)
-            r = ResQ(server="%s:%s" % (options_resqserver, options_resqport))
-            r.enqueue(eventQ, eventid)
+            main = barista()
+            eventid = main.firstRegist(testflg, hostname, operator, calltype, frequency, language, message, headid, footid, addressee)
+            if eventid == '':
+                response = '{\"success\":\"false\",\"error\":\"%s\"}' % define.ERROR_CODE['connection']
+                self.write(response)
             response = '{\"success\":\"true\",\"eventid\":\"%s\"}' % eventid
-            self.set_header("Content-Type", "application/json;charset=utf-8")
             self.write(response)
 
     def get(self):
