@@ -17,7 +17,7 @@ from twilio.rest import TwilioRestClient
 from twilio import twiml
 import ConfigParser
 from dbmanage import sqlitedb
-import baristastatus
+import define
 
 conf = ConfigParser.SafeConfigParser()
 conf.read('settings.ini')
@@ -48,8 +48,8 @@ class twiliomanage(sqlitedb):
 
     def call(self, eventid, numorder, ghid, name, telno, testflg, hostname, message, headid, footid):
         print 'eventid=%s, numorder=%s, ghid=%s, name=%s, telno=%s, testflg=%s, hostname=%s, message=%s, headid=%s, footid=%s' % (eventid, numorder, ghid, name, telno, testflg, hostname, message, headid, footid)
-        sid = baristastatus.INITIAL_VALUE['callsid']
-        if testflg == int(baristastatus.DEBUG_FLG['off']):
+        sid = define.INITIAL_VALUE['callsid']
+        if testflg == int(define.DEBUG_FLG['off']):
             call = self.get_twilio().calls.create(to='%s' % options_to, from_='%s' % options_from_, url='%s:%s/callresponse?eventid=%s' % (options_baseurl, options_port, eventid))
             sid = call.sid
         result = sqlitedb.insertsid(self, eventid, numorder, ghid, sid)
@@ -69,9 +69,9 @@ class twiliomanage(sqlitedb):
 
     def response(self, digits):
         text = options_response_timeout
-        if digits != '' and digits == '1':
+        if digits != '' and digits == define.PUSHED_DIGITS['positive']:
             text = options_response_positive
-        elif digits != '' and digits == '2':
+        elif digits != '' and digits == define.PUSHED_DIGITS['negative']:
             text = options_response_negative
         elif digits != '':
             text = options_response_unknown
