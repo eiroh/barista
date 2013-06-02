@@ -3,6 +3,7 @@ import time
 import sqlite3
 from dbmanage import sqlitedb
 from twiliomanage import twiliomanage
+import define
 
 class callQ(object):
     queue = "baristaCall"
@@ -24,18 +25,28 @@ class callQ(object):
         evinfo_footid = info['footid']
         evinfo_lastnum = info['lastnum']
         dbinfos = db.getactivecall(eventid)
-        #print 'dbinfos %s' % dbinfos
-        tw = twiliomanage()
-        for dbinfo in dbinfos:
-            dbinfo_eventid = dbinfo['eventid']
-            dbinfo_numorder = dbinfo['numorder']
-            dbinfo_ghid = dbinfo['ghid'].encode('utf-8')
-            dbinfo_name = dbinfo['name'].encode('utf-8')
-            dbinfo_telno = dbinfo['telno'].encode('utf-8')
-            dbinfo_sleep = dbinfo['sleep']
-            dbinfo_callid = dbinfo['callid']
-            dbinfo_attempt = dbinfo['attempt']
-            dbinfo_latesttime = dbinfo['latesttime'].encode('utf-8')
-            dbinfo_lateststatus = dbinfo['lateststatus']
-            result = tw.call(dbinfo_eventid, dbinfo_numorder, dbinfo_ghid, dbinfo_name, dbinfo_telno, evinfo_testflg, evinfo_hostname, evinfo_message, evinfo_headid, evinfo_footid) 
-            #result = tw.call('ichiro', 'suzuki', '0000', '1', 'hoge.example.com', 'message is hoge', '1', '1')
+
+        #update status of eventdb
+
+        if evinfo_calltype == int(define.CALL_TYPE['paralell']):
+            print 'paralell'
+            tw = twiliomanage()
+            for dbinfo in dbinfos:
+                if dbinfo['lateststatus'] == int(define.CALL_STATUS['WAITING']):
+                    dbinfo_eventid = dbinfo['eventid']
+                    dbinfo_numorder = dbinfo['numorder']
+                    dbinfo_ghid = dbinfo['ghid'].encode('utf-8')
+                    dbinfo_name = dbinfo['name'].encode('utf-8')
+                    dbinfo_telno = dbinfo['telno'].encode('utf-8')
+                    dbinfo_sleep = dbinfo['sleep']
+                    dbinfo_callid = dbinfo['callid']
+                    dbinfo_attempt = dbinfo['attempt']
+                    dbinfo_latesttime = dbinfo['latesttime'].encode('utf-8')
+                    dbinfo_lateststatus = dbinfo['lateststatus']
+                    #update lastnum of eventdb
+                    #update attempt of calldb
+                    print 'debug tw.call'
+                    result = tw.call(dbinfo_eventid, dbinfo_numorder, dbinfo_ghid, dbinfo_name, dbinfo_telno, evinfo_testflg, evinfo_hostname, evinfo_message, evinfo_headid, evinfo_footid) 
+                    #update lateststatus,latesttime,callid of calldb
+        else:
+            print 'sequential'
