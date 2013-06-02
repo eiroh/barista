@@ -19,10 +19,7 @@ class eventQ(object):
         print (eventid)
         db = sqlitedb()
         eventrec = db.getactiveevent()
-        #print 'activeevent=%s' % eventrec
         for event in eventrec:
-            #print event[0]
             print event['eventid']
             r = ResQ(server="%s:%s" % (resqserver, resqport))
-            #r.enqueue(callQ, event[0])
             r.enqueue(callQ, event['eventid'])
