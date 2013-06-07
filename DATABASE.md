@@ -1,6 +1,7 @@
 * SCHEMA
 
-** event table
+## event table
+|name|type|
 |:-----:|:-----:|
 |eventid|INTEGER|
 |status|INTEGER|
