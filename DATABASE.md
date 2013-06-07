@@ -14,5 +14,6 @@
 |footid|INTEGER|アナウンス末尾に流す定型文のID|
 |lastnum|INTEGER|現在架電している人の架電順番|
 
-** call table
+## call table
+
 eventid INTEGER, numorder INTEGER, ghid TEXT, name TEXT, telno TEXT, sleep INTEGER, callid INTEGER, attempt INTEGER, latesttime TEXT, lateststatus INTEGER
