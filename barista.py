@@ -23,8 +23,7 @@ class barista():
         eventid = tw.geteventid()
         status = define.EVENT_STATUS['WAITING']
         lastnum = 0
-        result = tw.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum)
-
+        tw.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum)
         for record in addressee:
             param = record.split(':')
             numorder = param[0]
@@ -36,9 +35,7 @@ class barista():
             attempt = 0
             latesttime = 0
             lateststatus = define.CALL_STATUS['WAITING']
-            result = tw.callregister(eventid, numorder, ghid, name, telno, sleep, callid, attempt, latesttime, lateststatus)
-
+            tw.callregister(eventid, numorder, ghid, name, telno, sleep, callid, attempt, latesttime, lateststatus)
         r = ResQ(server="%s:%s" % (options_resqserver, options_resqport))
         r.enqueue(eventQ, eventid)
-
         return eventid

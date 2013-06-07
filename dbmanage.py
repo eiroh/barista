@@ -54,18 +54,18 @@ class sqlitedb():
     def eventregister(self, eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum):
         query = ''' insert into event (eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum) values ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s') ''' %(eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum);
         self._dbmanager(query)
-        return 'OK'
+        return
 
     def callregister(self, eventid, numorder, ghid, name, telno, sleep, callid, attempt, latesttime, lateststatus):
         query = ''' insert into call (eventid, numorder, ghid, name, telno, sleep, callid, attempt, latesttime, lateststatus) values ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s') ''' %(eventid, numorder, ghid, name, telno, sleep, callid, attempt, latesttime, lateststatus); 
         self._dbmanager(query)
-        return 'OK'
+        return
 
     def insertsid(self, eventid, numorder, ghid, sid):
         print 'insertsid: eventid=%s,numorder=%s,ghid=%s,sid=%s' % (eventid, numorder, ghid, sid)
         query = ''' update call set callid='%s', lateststatus='%s' where eventid='%s' and numorder='%s' and ghid='%s' ''' %(sid, '1', eventid, numorder, ghid);
         self._dbmanager(query)
-        return 'OK'
+        return
 
     def getactiveevent(self):
         query = ''' select eventid from event where (status = %s or status = %s) ''' %(define.EVENT_STATUS['WAITING'], define.EVENT_STATUS['IN_PROGRESS']);

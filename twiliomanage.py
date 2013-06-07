@@ -40,19 +40,31 @@ options_response_timeout  = conf.get('Barista', 'response_timeout')
 
 class twiliomanage(sqlitedb):
 
-    def get_twilio(self):
+    def _get_twilio(self):
         account = '%s' % options_account
         token = '%s' % options_token
         client = TwilioRestClient(account, token)
         return client
 
-    def call(self, eventid, numorder, ghid, name, telno, testflg, hostname, message, headid, footid):
-        print 'eventid=%s, numorder=%s, ghid=%s, name=%s, telno=%s, testflg=%s, hostname=%s, message=%s, headid=%s, footid=%s' % (eventid, numorder, ghid, name, telno, testflg, hostname, message, headid, footid)
+    def _paralellcall(self, eventinfo, callinfo):
         sid = define.INITIAL_VALUE['callsid']
-        if testflg == int(define.DEBUG_FLG['off']):
-            call = self.get_twilio().calls.create(to='%s' % options_to, from_='%s' % options_from_, url='%s:%s/callresponse?eventid=%s' % (options_baseurl, options_port, eventid))
+        if eventinfo['testflg'] == int(define.DEBUG_FLG['off']):
+            call = self._get_twilio().calls.create(to='%s' % options_to, from_='%s' % options_from_, url='%s:%s/callresponse?eventid=%s' % (options_baseurl, options_port, eventinfo['eventid']))
             sid = call.sid
-        result = sqlitedb.insertsid(self, eventid, numorder, ghid, sid)
+        result = sqlitedb.insertsid(self, eventinfo['eventid'], callinfo['numorder'], callinfo['ghid'], sid)
+        return
+
+    #def _sequentialcall(self, eventinfo, callinfo):
+    #    return
+
+    def callrequest(self, eventid):
+        event_info = sqlitedb.geteventinfo(self, eventid)
+        eventinfo = event_info[0]
+        if eventinfo['calltype'] == int(define.CALL_TYPE['paralell']):
+            callinfo = sqlitedb.getactivecall(self, eventid)
+            resutl = self._paralellcall(eventinfo, callinfo)
+        #else:
+        #    result = self._sequentialcall(eventinfo, callinfo)
         return result
 
     def announce(self, eventid):
@@ -82,6 +94,6 @@ class twiliomanage(sqlitedb):
     def get_record(self, callsid):
         print callsid
         print '%s' % callsid 
-        call = self.get_twilio().calls.get(callsid)
+        call = self._get_twilio().calls.get(callsid)
         result = 'status=%s start_time=%s' % (call.status, call.start_time)
         return result
