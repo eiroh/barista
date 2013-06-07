@@ -12,8 +12,18 @@
 |message|TEXT|アナウンスの本文|
 |headid|INTEGER|アナウンス冒頭に流す定型文のID|
 |footid|INTEGER|アナウンス末尾に流す定型文のID|
-|lastnum|INTEGER|現在架電している人の架電順番|
+|lastnum|INTEGER|現在架電している人の架電順|
 
 ## call table
-
-eventid INTEGER, numorder INTEGER, ghid TEXT, name TEXT, telno TEXT, sleep INTEGER, callid INTEGER, attempt INTEGER, latesttime TEXT, lateststatus INTEGER
+|name|type|meaning|
+|:-----:|:-----:|:-----:|
+|eventid|INTEGER|event tableと結合させるためのID|
+|numorder|INTEGER|コール順|
+|ghid|TEXT|コール対象者のID|
+|name|TEXT|コール対象者の名前|
+|telno|TEXT|コール対象者の電話番号|
+|sleep|INTEGER|次の順番に指定されたコールを始めるまでに待つ時間|
+|callid|INTEGER|架電要求毎にtwilioが発行するID|
+|attempt|INTEGER|架電回数|
+|latesttime|TEXT|最後に架電した時間|
+|lateststatus|INTEGER|最新の回答内容|
