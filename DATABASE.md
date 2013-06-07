@@ -1,7 +1,7 @@
 ## event table
 |name|type|meaning|
 |:-----:|:-----:|:-----:|
-|eventid|INTEGER|架電要求APIコール毎に一意に発行するID。履歴を取得する際にはこのIDを指定して行う。|
+|eventid|INTEGER|架電要求APIコール毎に一意に発行するID|
 |status|INTEGER|架電処理全体の状況|
 |testflg|INTEGER|テスト、本番の区別|
 |hostname|TEXT|障害が発生したホスト名|
