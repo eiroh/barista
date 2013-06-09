@@ -54,18 +54,30 @@ class twiliomanage(sqlitedb):
         result = sqlitedb.insertsid(self, eventinfo['eventid'], callinfo['numorder'], callinfo['ghid'], sid)
         return
 
-    #def _sequentialcall(self, eventinfo, callinfo):
-    #    return
+    def _sequentialcall(self, eventinfo, callinfo):
+        print 'seuential call: we havent supported yet'
+        return
 
     def callrequest(self, eventid):
         event_info = sqlitedb.geteventinfo(self, eventid)
         eventinfo = event_info[0]
-        if eventinfo['calltype'] == int(define.CALL_TYPE['paralell']):
-            callinfo = sqlitedb.getactivecall(self, eventid)
-            resutl = self._paralellcall(eventinfo, callinfo)
-        #else:
-        #    result = self._sequentialcall(eventinfo, callinfo)
-        return result
+        callinfo = sqlitedb.getactivecall(self, eventid)
+        result = self._isalive(eventinfo, callinfo)
+        if result == True:
+            if eventinfo['calltype'] == int(define.CALL_TYPE['paralell']):
+                resutl = self._paralellcall(eventinfo, callinfo)
+            else:
+                result = self._sequentialcall(eventinfo, callinfo)
+            return result
+        else:
+            return
+
+    def _isalive(self, eventinfo, callinfo):
+        for call in callinfo:
+            if eventinfo['frequency'] > call['attempt']:
+                return True
+        result = sqlitedb.finishevent(self, eventinfo)
+        return False
 
     def announce(self, eventid):
         result = sqlitedb.geteventinfo(self, eventid)
@@ -92,7 +104,6 @@ class twiliomanage(sqlitedb):
         return result
 
     def get_record(self, callsid):
-        print callsid
         print '%s' % callsid 
         call = self._get_twilio().calls.get(callsid)
         result = 'status=%s start_time=%s' % (call.status, call.start_time)

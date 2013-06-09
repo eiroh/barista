@@ -7,20 +7,10 @@ import tornado.web
 import os.path
 import logging
 import string
-import time
-import uuid
 from optparse import OptionParser
 import os, sys
-import time
 from os import path
 from tornado.options import define, options
-from datetime import datetime
-import json
-from pyres import ResQ
-from eventq import eventQ
-from twilio.rest import TwilioRestClient
-from twilio import twiml
-from dbmanage import sqlitedb
 import ConfigParser
 from twiliomanage import twiliomanage
 import define
@@ -30,12 +20,6 @@ conf = ConfigParser.SafeConfigParser()
 conf.read('settings.ini')
 options_baseurl = conf.get('Tornado', 'baseurl')
 options_port    = conf.get('Tornado', 'port')
-options_from_   = conf.get('Twilio', 'from_')
-options_to      = conf.get('Twilio', 'to')
-options_account = conf.get('Twilio', 'account')
-options_token   = conf.get('Twilio', 'token')
-options_resqserver = conf.get('ResQ', 'server')
-options_resqport   = conf.get('ResQ', 'port')
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -54,14 +38,7 @@ class Application(tornado.web.Application):
         tornado.web.Application.__init__(self, handlers, **settings)
         tornado.options.parse_command_line()
 
-class BaseHandler(tornado.web.RequestHandler):
-    def get_twilio(self):
-        account = '%s' % options_account
-        token = '%s' % options_token
-        client = TwilioRestClient(account, token)
-        return client
-
-class EventHandler(BaseHandler):
+class EventHandler(tornado.web.RequestHandler):
 
     def checkinput(self, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, addressee):
         if testflg != define.DEBUG_FLG['off'] and testflg != define.DEBUG_FLG['on']:
@@ -149,47 +126,30 @@ class EventHandler(BaseHandler):
         result = 'OK'
         self.render("eventhandler.html", result=result)
 
-#class CallHandler(BaseHandler):
-#    def post(self):
-#        testflg = self.get_argument('testflg')
-#        hostname = self.get_argument('hostname')
-#        operator = self.get_argument('operator')
-#        calltype = self.get_argument('calltype')
-#        frequency = self.get_argument('frequency')
-#        message = self.get_argument('message')
-#        headid = self.get_argument('headid')
-#        footid = self.get_argument('footid')
-#        addressee = self.request.arguments['addressee']
-#        db = sqlitedb()
-#        eventid = db.geteventid()
-#        status = 'init'
-#        result = db.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, message, headid, footid)
-#        self.write('OK')
-#
-#    def get(self):
-#        sid = self.get_argument('sid')
-#        tw = twiliomanage()
-#        result = tw.get_record(sid)
-#        self.write(result)
+    #def get(self):
+    #    sid = self.get_argument('sid')
+    #    tw = twiliomanage()
+    #    result = tw.get_record(sid)
+    #    self.write(result)
 
-class CallResponseHandler(BaseHandler):
+class CallResponseHandler(tornado.web.RequestHandler):
     def post(self):
         eventid = self.get_argument('eventid')
         tw = twiliomanage()
         result = tw.announce(eventid)
         self.write(result)
 
-class StatusHandler(BaseHandler):
-    def post(self):
-        print 'StatusHandler method=post'
+class StatusHandler(tornado.web.RequestHandler):
+    def post(self): # called by twilio
+        logging.info('StatusHandler method=post')
         Digits = self.get_argument('Digits')
         print Digits
         tw = twiliomanage()
         result = tw.response(Digits)
         self.write(result)
 
-    def get(self):
-        print 'StatusHandler method=get'
+    def get(self): # for debug use
+        logging.info('StatusHandler method=get')
         CallSid = self.get_argument('CallSid')
         tw = twilio()
         result = tw.get_record(CallSid)
@@ -197,8 +157,8 @@ class StatusHandler(BaseHandler):
 
 def main():
     tornado.options.parse_command_line()
-    db = sqlitedb()
-    db.initdb()
+    tw = twiliomanage()
+    tw.initdb()
     http_server = tornado.httpserver.HTTPServer(Application())
     http_server.listen(options_port)
     tornado.ioloop.IOLoop.instance().start()
