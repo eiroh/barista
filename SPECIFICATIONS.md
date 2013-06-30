@@ -24,17 +24,18 @@ cronがDBからWAITINGステイタスのイベントIDを取得し、そのIDを
 2. IN_PROGRESS
     1週目の1人目コールする。
 3. WAITING cron待ち
-4. IN_PROGRESS
+4. IN_PROGRESS (※1)
     1週目の2人目コールする。
 5. WAITING cron待ち
-6. IN_PROGRESS
+6. IN_PROGRESS (※1)
     1週目の3人目コールする。
-3. WAITING cron待ち
-4. IN_PROGRESS
-    最終コールから120秒以上経過している場合に処理を行う。
-    誰かから回答がついていたらFINISHEDへ。ついていなければ、2週目の1人目コールする。
-    2週目の2人目コールする。
-5. FINISHED
+7. WAITING cron待ち
+8. IN_PROGRESS (※1)
+9. FINISHED
+
+(※1)
+最終コールから120秒以上経過している場合に処理を行う。
+誰かから回答がついていたらFINISHEDへ。ついていなければ次の人へ。
 
 #### コールバック
 1. アナウンス要求（電話に出なかった場合これはこない）
