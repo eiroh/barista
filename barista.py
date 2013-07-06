@@ -34,7 +34,7 @@ class barista():
             callid = 0
             attempt = 0
             latesttime = 0
-            lateststatus = define.CALL_STATUS['WAITING']
+            lateststatus = define.ANSWER_STATUS['NORESPONSE']
             tw.callregister(eventid, numorder, ghid, name, telno, sleep, callid, attempt, latesttime, lateststatus)
         r = ResQ(server="%s:%s" % (options_resqserver, options_resqport))
         r.enqueue(eventQ, eventid)

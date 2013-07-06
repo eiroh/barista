@@ -24,9 +24,10 @@ options_port    = conf.get('Tornado', 'port')
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
-            (r'/call', EventHandler),
-            (r'/status', StatusHandler),
-            (r'/callresponse', CallResponseHandler),
+            (r'/call', EventHandler), # call request
+            (r'/callresponse', CallResponseHandler), # response announcement
+            (r'/status', StatusHandler), # digit response
+            (r'/status/([^/]+)/([^/]+)/([^/]+)', StatusHandler), # digit response
             #(r'/event', EventHandler),
         ]
         settings = dict(
@@ -135,25 +136,27 @@ class EventHandler(tornado.web.RequestHandler):
 class CallResponseHandler(tornado.web.RequestHandler):
     def post(self):
         eventid = self.get_argument('eventid')
+        numorder = self.get_argument('numorder')
+        ghid = self.get_argument('ghid')
         tw = twiliomanage()
-        result = tw.announce(eventid)
+        result = tw.announce(eventid, numorder, ghid)
         self.write(result)
 
 class StatusHandler(tornado.web.RequestHandler):
-    def post(self): # called by twilio
+    def post(self, eventid, numorder, ghid): # called by twilio
         logging.info('StatusHandler method=post')
         Digits = self.get_argument('Digits')
-        print Digits
+        CallSid = self.get_argument('CallSid')
         tw = twiliomanage()
-        result = tw.response(Digits)
+        result = tw.response(Digits, eventid, numorder, ghid, CallSid)
         self.write(result)
 
-    def get(self): # for debug use
-        logging.info('StatusHandler method=get')
-        CallSid = self.get_argument('CallSid')
-        tw = twilio()
-        result = tw.get_record(CallSid)
-        self.write(result)
+    #def get(self): # for debug use
+    #    logging.info('StatusHandler method=get')
+    #   CallSid = self.get_argument('CallSid')
+    #   tw = twilio()
+    #   result = tw.get_record(CallSid)
+    #   self.write(result)
 
 def main():
     tornado.options.parse_command_line()

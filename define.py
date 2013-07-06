@@ -9,14 +9,6 @@ EVENT_STATUS = {
     'UNKNOWN_ERROR':'99'
 }
 
-CALL_STATUS = {
-    'WAITING':'0',
-    'PREPROCESSING':'1',
-    'IN_PROGRESS':'2',
-    'FINISHED':'3',
-    'UNKNOWN_ERROR':'99'
-}
-
 ANSWER_STATUS = {
     'POSITIVE':'1',
     'NEGATIVE':'2',
@@ -27,7 +19,6 @@ ANSWER_STATUS = {
 ERROR_CODE = {
     'parameters':'1',
     'connection':'2',
-    'C':'3',
     'UNKNOWN_ERROR':'99'
 }
 

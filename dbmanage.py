@@ -64,30 +64,34 @@ class sqlitedb():
     def insertsid(self, eventid, numorder, ghid, sid):
         print 'insertsid: eventid=%s,numorder=%s,ghid=%s,sid=%s' % (eventid, numorder, ghid, sid)
         millis = int(round(time.time() * 1000))
-        query = ''' update call set callid='%s', latesttime ='%s', lateststatus='%s', attempt = attempt + 1 where eventid='%s' and numorder='%s' and ghid='%s' ''' %(sid, millis, define.CALL_STATUS['IN_PROGRESS'], eventid, numorder, ghid);
+        query = ''' update call set callid='%s', latesttime ='%s', attempt = attempt + 1 where eventid='%s' and numorder='%s' and ghid='%s' ''' %(sid, millis, eventid, numorder, ghid);
         self._dbmanager(query)
         query = ''' update event set lastnum ='%s' where eventid='%s' ''' %(numorder, eventid);
         self._dbmanager(query)
         return
 
     def getactiveevent(self):
-        #query = ''' select eventid from event where (status = %s or status = %s) ''' %(define.EVENT_STATUS['WAITING'], define.EVENT_STATUS['IN_PROGRESS']);
         query = ''' select eventid from event where (status = %s) ''' %(define.EVENT_STATUS['WAITING']);
         result = self._dbmanager(query)
         return result
 
     def getactivecall(self, eventid):
-        query = ''' select * from call where eventid == '%s' and (lateststatus == '%s') order by numorder ''' %(eventid, define.CALL_STATUS['WAITING']);
+        #query = ''' select * from call where eventid == '%s' and (lateststatus == '%s') order by numorder ''' %(eventid, define.CALL_STATUS['WAITING']);
+        query = ''' select * from call where eventid == '%s' and (lateststatus == '%s' or lateststatus == '%s') order by numorder ''' %(eventid, define.ANSWER_STATUS['NORESPONSE'], define.ANSWER_STATUS['UNKNOWN_ERROR']);
         result = self._dbmanager(query)
         return result
 
-    #def updatestatus(self, eventid, numorder, ghid, status):
+    #def updatelateststatus(self, eventid, numorder, ghid, status):
     #    millis = int(round(time.time() * 1000))
-    #    query = ''' update call set latesttime ='%s', lateststatus ='%s', attempt = attempt + 1 where eventid='%s' and numorder='%s' and ghid='%s' ''' %(millis, status, eventid, numorder, ghid);
+    #    query = ''' update call set latesttime ='%s', lateststatus ='%s' where eventid='%s' and numorder='%s' and ghid='%s' ''' %(millis, status, eventid, numorder, ghid);
     #    result = self._dbmanager(query)
-    #    query = ''' update event set lastnum ='%s' where eventid='%s' ''' %(numorder, eventid);
-    #    result = self._dbmanager(query)
-    #    return 'OK'
+    #    return result
+
+    def updatelateststatus(self, callsid, lateststatus):
+        millis = int(round(time.time() * 1000))
+        query = ''' update call set latesttime ='%s', lateststatus ='%s' where callid='%s' ''' %(millis, lateststatus, callsid);
+        result = self._dbmanager(query)
+        return result
 
     def geteventinfo(self, eventid):
         query = ''' select * from event where eventid = '%s' ''' %(eventid);
