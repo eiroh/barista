@@ -39,3 +39,30 @@ class barista():
         r = ResQ(server="%s:%s" % (options_resqserver, options_resqport))
         r.enqueue(eventQ, eventid)
         return eventid
+
+    def getLog(self, eventid):
+
+        tw = twiliomanage()
+        result = tw.getalllog(eventid)
+
+        calldata = ''
+        for i,record in enumerate(result['call']):
+            if i != 0:
+                calldata = calldata + ','
+            data = '{\"ghid\":\"%s\", \"order\":\"%s\", \"telno\":\"%s\", \"name\":\"%s\", \"numofcall\":\"%s\", \"latestcall\":\"%s\", \"status\":\"%s\"}' % \
+                    (record['ghid'], record['numorder'], record['telno'], record['name'], record['attempt'], record['latesttime'], record['lateststatus'])
+            calldata = calldata + data
+            print calldata.encode('utf-8')
+
+        response = '{\"success\":\"true\", \"type\":\"%s\", \"frequency\":\"%s\", \"headid\":\"%s\", \"footid\":\"%s\", \"headmsg\":\"%s\", \"announce\":\"%s\", \"footmsg\":\"%s\", \"eventstatus\":\"%s\", \"result\":[%s]}' % \
+                    (result['event'][0]['calltype'], \
+                    result['event'][0]['frequency'], \
+                    result['event'][0]['headid'], \
+                    result['event'][0]['footid'], \
+                    result['event'][0]['headid'], \
+                    result['event'][0]['message'], \
+                    result['event'][0]['footid'], \
+                    result['event'][0]['status'], \
+                    calldata)
+        return response
+

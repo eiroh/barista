@@ -102,3 +102,16 @@ class sqlitedb():
         query = ''' update event set status ='%s' where eventid='%s' ''' %(define.EVENT_STATUS['FINISHED'], eventinfo['eventid']);
         self._dbmanager(query)
         return 
+
+    def startevent(self, eventinfo):
+        query = ''' update event set status ='%s' where eventid='%s' ''' %(define.EVENT_STATUS['IN_PROGRESS'], eventinfo['eventid']);
+        self._dbmanager(query)
+        return
+
+    def getalllog(self, eventid):
+        query = ''' select * from event where eventid = '%s' ''' %(eventid);
+        eventresult = self._dbmanager(query)
+        query = ''' select * from call where eventid = '%s' order by numorder ''' %(eventid);
+        callresult = self._dbmanager(query)
+        return dict(event=eventresult,call=callresult)
+
