@@ -124,8 +124,16 @@ class EventHandler(tornado.web.RequestHandler):
             self.write(response)
 
     def get(self):
-        result = 'OK'
-        self.render("eventhandler.html", result=result)
+
+        eventid = self.get_argument('eventid')
+        self.set_header("Content-Type", "application/json;charset=utf-8") 
+        if eventid == '':
+            logging.info('input parameter error testflg')
+            response = '{\"success\":\"false\",\"error\":\"%s\"}' % define.ERROR_CODE['parameters']
+        else:
+            main = barista()
+            result = main.getLog(eventid)
+        self.write(result)
 
     #def get(self):
     #    sid = self.get_argument('sid')
