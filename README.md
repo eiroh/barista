@@ -71,7 +71,7 @@ response example of success
      "eventstatus":"1",
      "result":[
       {
-       "gsid":"jirou",
+       "ghid":"jirou",
        "order":"1",
        "telno","0000000",
        "name":"鈴木次郎",
@@ -81,7 +81,7 @@ response example of success
        "answer":""
       },
       {
-       "gsid":"saburou",
+       "ghid":"saburou",
        "order":"2",
        "telno","0000000",
        "name":"鈴木三郎",
@@ -91,7 +91,7 @@ response example of success
        "answer":"2"
       },
       {
-       "gsid":"shirou",
+       "ghid":"shirou",
        "order":"3",
        "telno","0000000",
        "name":"鈴木四郎",
