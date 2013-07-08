@@ -64,25 +64,26 @@ class twiliomanage(sqlitedb):
     def callrequest(self, eventid):
         events = sqlitedb.geteventinfo(self, eventid)
         for event in events:
-            calls = sqlitedb.getactivecall(self, eventid)
-            if calls == '':
-                result = sqlitedb.finishevent(self, event) 
-            else:
-                result = self._closeEvent(event, calls)
-                if result == False:
-                    if event['calltype'] == int(define.CALL_TYPE['paralell']):
-                        resutl = self._paralellcall(event, calls)
-                    else:
-                        result = self._sequentialcall(event, calls)
-                    return result
+            if event['calltype'] == int(define.CALL_TYPE['paralell']):
+                calls = sqlitedb.getactivecall(self, eventid)
+                if calls == '':
+                    result = sqlitedb.finishevent(self, event)
                 else:
-                    return
+                    result = self._closeEvent(event, calls)
+                    if result == False:
+                        self._paralellcall(event, calls)
+            else:
+                result = self._sequentialcall(event, calls)
+        return
 
     def _closeEvent(self, eventinfo, callinfo):
         for call in callinfo:
             if eventinfo['frequency'] > call['attempt']:
                 return False
         result = sqlitedb.finishevent(self, eventinfo)
+        return True
+
+    def _closeEventSequential(self, eventinfo, callinfo):
         return True
 
     def announce(self, eventid, numorder, ghid):
