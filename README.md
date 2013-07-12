@@ -1,16 +1,14 @@
 #Barista
-Barista is a web api of calling phone.  
-It is acceptable that specifying order, frequency and some other parameters.  
-It can handle paralell call and sequential call.  
-To have log of answer, It can call person who don't answer.
+Baristaはシステムから架電するweb-apiです。
+* 一斉に架電する機能（全員から回答があるまで未回答に人に架電を繰り返す）
+* 順番に架電する機能（誰か一人から回答があるまで繰り返す）
 
 #Description
-##Make Call
+##M架電する
 ###Request Url
-    http://example.com/api/v1/call
-    It need POST method.
+    http://example.com/api/v1/call（POSTメソッド）
 ###Request Parameters
-|parameters|value/example|description|
+|パラメータ|値/例|詳細|
 |:--------:|:-----------:|:----------|
 |testflg|0,1|0:normal, 1:debug mode(it doesn't call)|
 |hostname|example.com|-|
