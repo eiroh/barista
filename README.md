@@ -42,9 +42,9 @@ Baristaは架電web-apiです。
 ###Error Code
 |ID|type|意味|
 |:--:|:--:|:-----:|
-|1|-|-|
-|2|-|-|
-|99|system error, unknown error|-|
+|1|入力エラー|-|
+|2|システムエラー|システム間の接続に失敗|
+|99|その他のシステムエラー|-|
 
 ##履歴取得
 ###Request Url  
