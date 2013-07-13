@@ -29,21 +29,25 @@ Baristaは架電web-apiです。
     -d 'addressee=3:kouji:810000000000:加藤浩二:0' 
     http://example.com/api/v1/call
 
-###Response Field
+###Response Field  
+
 処理成功時はeventidを返す。eventidは履歴取得apiを利用する際に使う。  
+
     {"success":"true","eventid":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
 エラー時はerrorを返す。  
+
     {"success":"false","error":"xxx"}
 
 ###Error Code
-|code|type|meaning|
+|ID|type|意味|
 |:--:|:--:|:-----:|
 |1|-|-|
 |2|-|-|
 |99|system error, unknown error|-|
 
 ##履歴取得
-###Request Url
+###Request Url  
+
     http://example.com/api/v1/call（GETメソッド）  
 
 ###Request Parameters
@@ -51,7 +55,8 @@ Baristaは架電web-apiです。
 |:-------:|:-----------:|:---------:|
 |eventid|xxxxxxxxxxxxxxxx|架電apiの処理成功時に返されるeventid|
 
-###Sample Request Url
+###Sample Request Url  
+
     curl http://example.com/api/v1/call?eventid=xxxxxxxxxxxxxxxxxxxxxxx
 ###Response Field
 
