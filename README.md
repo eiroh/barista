@@ -42,20 +42,20 @@ Baristaは架電web-apiです。
 |2|-|-|
 |99|system error, unknown error|-|
 
-##Retrieve Answer Logs
+##履歴取得
 ###Request Url
-    http://example.com/api/v1/call
-    It accepts GET method.
+    http://example.com/api/v1/call（GETメソッド）  
+
 ###Request Parameters
-|parameter|value/example|description|
+|パラメータ|値/例|詳細|
 |:-------:|:-----------:|:---------:|
-|eventid|xxxxxxxxxxxxxxxx|specify eventid which is a response of call api|
+|eventid|xxxxxxxxxxxxxxxx|架電apiの処理成功時に返されるeventid|
 
 ###Sample Request Url
     curl http://example.com/api/v1/call?eventid=xxxxxxxxxxxxxxxxxxxxxxx
 ###Response Field
 
-response example of success  
+処理成功時のレスポンス
 
     [{
      "success":"true",
@@ -69,30 +69,30 @@ response example of success
      "eventstatus":"1",
      "result":[
       {
-       "ghid":"jirou",
+       "ghid":"tarou",
        "order":"1",
-       "telno","0000000",
-       "name":"鈴木次郎",
+       "telno","810000000000",
+       "name":"木村太郎",
        "numofcall":"1",
        "latestcall":"1367890211",
        "status":"1",
        "answer":""
       },
       {
-       "ghid":"saburou",
+       "ghid":"baijyaku",
        "order":"2",
-       "telno","0000000",
-       "name":"鈴木三郎",
+       "telno","810000000000",
+       "name":"中村梅雀",
        "numofcall":"1",
        "latestcall":"1367890311",
        "status":"1",
        "answer":"2"
       },
       {
-       "ghid":"shirou",
+       "ghid":"kouji",
        "order":"3",
-       "telno","0000000",
-       "name":"鈴木四郎",
+       "telno","810000000000",
+       "name":"加藤浩二",
        "numofcall":"1",
        "latestcall":"1367890411",
        "status":"1",
@@ -101,41 +101,35 @@ response example of success
       ]
     }]
 
-response example with error
+エラー発生時のレスポンス
 
     {"success":"false","error":"xxx"}
 
 ####eventstatus
 
-|code|meaning|-|
+|ID|意味|-|
 |:--:|:-----:|:-:|
-|1|before calling|-|
-|2|during calling|-|
-|3|finished|-|
-|99|system error, unknown error|-|
-
-####status
-
-|code|meaning|-|
-|:--:|:-----:|:-:|
-|1|before calling|-|
-|2|during calling|-|
-|3|finished|-|
-|99|system error, unknown error|-|
+|0|処理開始待ち|-|
+|1|処理中|-|
+|2|処理完了|-|
+|99|システムエラー|-|
 
 ####answer
 
-|code|meaning|-|
+|ID|意味|-|
 |:--:|:-----:|:-:|
-|0|no answer|-|
-|1|answered positive|-|
-|2|answered negative|-|
+|1|肯定的な回答|-|
+|2|否定的な回答|-|
+|3|回答無し|-|
+|99|
 
 ###Error Code
 
 |code|meaning|-|
 |:--:|:-----:|:-:|
-|1|-|-|
+|1|入力エラー|-|
+|2|システムエラー|システム間の接続に失敗|
+|99|その他のシステムエラー|-|
 |2|-|-|
 |99|system error, unknown error|-|
 
