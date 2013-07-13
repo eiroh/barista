@@ -58,7 +58,14 @@ class twiliomanage(sqlitedb):
         return
 
     def _sequentialcall(self, eventinfo, callinfo):
-        print 'seuential call: we havent supported yet'
+        sid = define.INITIAL_VALUE['callsid']
+        if eventinfo['testflg'] == int(define.DEBUG_FLG['off']):
+            for cinfo in callinfo:
+                call = self._get_twilio().calls.create \
+                    (to='%s' % cinfo['telno'], from_='%s' % options_from_, url='%s:%s/callresponse?eventid=%s&numorder=%s&ghid=%s' % \
+                    (options_baseurl, options_port, eventinfo['eventid'], cinfo['numorder'], cinfo['ghid']))
+                sid = call.sid
+                result = sqlitedb.insertsid(self, eventinfo['eventid'], cinfo['numorder'], cinfo['ghid'], sid)
         return
 
     def callrequest(self, eventid):
@@ -71,9 +78,23 @@ class twiliomanage(sqlitedb):
                 else:
                     result = self._closeEvent(event, calls)
                     if result == False:
-                        self._paralellcall(event, calls)
+                        print 'DEBUG'
+                        #self._paralellcall(event, calls)
             else:
-                result = self._sequentialcall(event, calls)
+                print 'sequential'
+                #calls = sqlitedb.gettargettedcall(self, eventid)
+                calls = sqlitedb.getactivecall(self, eventid)
+                if calls == '':
+                    result = sqlitedb.finishevent(self, event)
+                else:
+                    print calls
+                    call = calls[0] # order by sareteiru kara jyunban ni call dekiru, saidai kaisuu no kouryo ireru
+                    print call
+                    #for call in calls:
+                    #    print call['numorder'] 
+                    #result = self._closeEvent(event, calls)
+                    #if result == False:
+                    #self._sequentialcall(event, calls)
         return
 
     def _closeEvent(self, eventinfo, callinfo):
@@ -89,13 +110,15 @@ class twiliomanage(sqlitedb):
     def announce(self, eventid, numorder, ghid):
         result = sqlitedb.geteventinfo(self, eventid)
         record = result[0]
+        language = record['language'].encode('utf-8')
         message = record['message'].encode('utf-8')
         text1 = '<?xml version="1.0" encoding="UTF-8"?>\n'
         text2 = '<Response><Gather action=\"./status/%s/%s/%s\" method=\"POST\" timeout=\"10\" numDigits=\"1\">' % \
                 (eventid.encode('utf-8'), numorder.encode('utf-8'), ghid.encode('utf-8'))
-        text3 = '<Say voice=\"woman\" language=\"ja-jp\" loop=\"1\">'
+        #text3 = '<Say voice=\"woman\" language=\"ja-jp\" loop=\"2\">'
+        text3 = '<Say voice=\"woman\" language=\"%s\" loop=\"2\">' % message
         text4 = '%s%s%s' % (options_headid1, message, options_footid1)
-        text5 = '</Say></Gather><Say voice=\"woman\" language=\"ja-jp\" loop=\"1\">%s</Say></Response>' % options_response_timeout
+        text5 = '</Say></Gather><Say voice=\"woman\" language=\"ja-jp\" loop=\"2\">%s</Say></Response>' % options_response_timeout
         result = '%s%s%s%s%s' % (text1, text2, text3, text4, text5)
         print '%s' % result
         return result
