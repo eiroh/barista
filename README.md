@@ -2,6 +2,7 @@
 Baristaは架電web-apiです。
 * 一斉に架電する機能（全員から回答があるまで未回答に人に架電を繰り返す）
 * 順番に架電する機能（誰か一人から回答があるまで繰り返す）
+* 履歴を取得する機能
 
 #Description
 ##架電する
@@ -11,7 +12,7 @@ Baristaは架電web-apiです。
 |パラメータ|値/例|詳細|
 |:--------:|:-----------:|:----------|
 |testflg|0,1|0:架電する, 1:架電しない|
-|hostname|hoge.example.com|障害中のホスト名|
+|hostname|example.com|障害中のホスト名|
 |operator|ichiro|このapiをコール元を示すID|
 |calltype|1,2|1:順次コール, 2:一斉にコール|
 |frequency|1〜10|架電の最大回数|
@@ -22,7 +23,7 @@ Baristaは架電web-apiです。
 |addressee|1:tarou:810000000000:木村太郎:10|架電順:架電先ユーザID:電話番号:次の架電までのインターバル|
 
 ###Sample Request Url
-    curl -d 'testflg=0' -d 'hostname=hoge.example.com' -d 'operator=ichiro' -d 'calltype=1' -d 'frequency=10' 
+    curl -d 'testflg=0' -d 'hostname=example.com' -d 'operator=ichiro' -d 'calltype=1' -d 'frequency=10' 
     -d 'language=ja-jp' -d 'message=Socket timeout after 10 secondsです。' -d 'headid=2' -d 'footid=1' 
     -d 'addressee=1:tarou:810000000000:木村太郎:0' 
     -d 'addressee=2:baijyaku:810000000000:中村梅雀:0' 
@@ -126,17 +127,14 @@ Baristaは架電web-apiです。
 |1|肯定的な回答|-|
 |2|否定的な回答|-|
 |3|回答無し|-|
-|99|
 
 ###Error Code
 
-|code|meaning|-|
+|ID|意味|-|
 |:--:|:-----:|:-:|
 |1|入力エラー|-|
 |2|システムエラー|システム間の接続に失敗|
 |99|その他のシステムエラー|-|
-|2|-|-|
-|99|system error, unknown error|-|
 
 ##AUTHOR
 
