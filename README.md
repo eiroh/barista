@@ -24,15 +24,15 @@ Baristaは架電web-apiです。
 ###Sample Request Url
     curl -d 'testflg=0' -d 'hostname=hoge.example.com' -d 'operator=ichiro' -d 'calltype=1' -d 'frequency=10' 
     -d 'language=ja-jp' -d 'message=Socket timeout after 10 secondsです。' -d 'headid=2' -d 'footid=1' 
-    -d 'addressee=1:tarou:810000000000:木村太郎:0' -d 'addressee=2:baijyaku:810000000000:中村梅雀:0' -d 'addressee=3:kouji:810000000000:加藤浩二:0' 
+    -d 'addressee=1:tarou:810000000000:木村太郎:0' 
+    -d 'addressee=2:baijyaku:810000000000:中村梅雀:0' 
+    -d 'addressee=3:kouji:810000000000:加藤浩二:0' 
     http://example.com/api/v1/call
 
 ###Response Field
-Response of processing normaly. It returns eventid which is used for api of retrieve answer log.  
-
+処理成功時はeventidを返す。eventidは履歴取得apiを利用する際に使う。  
     {"success":"true","eventid":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
-Response of processing with errors.  
-
+エラー時はerrorを返す。  
     {"success":"false","error":"xxx"}
 
 ###Error Code
