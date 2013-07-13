@@ -1,30 +1,30 @@
 #Barista
-Baristaはシステムから架電するweb-apiです。
+Baristaは架電web-apiです。
 * 一斉に架電する機能（全員から回答があるまで未回答に人に架電を繰り返す）
 * 順番に架電する機能（誰か一人から回答があるまで繰り返す）
 
 #Description
-##M架電する
+##架電する
 ###Request Url
     http://example.com/api/v1/call（POSTメソッド）
 ###Request Parameters
 |パラメータ|値/例|詳細|
 |:--------:|:-----------:|:----------|
-|testflg|0,1|0:normal, 1:debug mode(it doesn't call)|
-|hostname|example.com|-|
-|operator|ichiro|-|
-|calltype|1,2|1:sequential, 2:paralell|
-|frequency|1,2,3,4,5,6,7,8,9,10|calltype=1 make call repeatedly until at least getting one person's answer|
-|language|en,ja-jp|-|
-|message|Socket time out error after 10 seconds|-|
-|headid|1,2|announcement id of beginning of call. you can define it in settings.ini|
-|footid|1,2|announcement id of end of call|
-|addressee|1:jirou:0000000:10|order:userid:name:tel:interval(sec) sleep specified seconds after calling|
+|testflg|0,1|0:架電する, 1:架電しない|
+|hostname|hoge.example.com|障害中のホスト名|
+|operator|ichiro|このapiをコール元を示すID|
+|calltype|1,2|1:順次コール, 2:一斉にコール|
+|frequency|1〜10|架電の最大回数|
+|language|en,ja-jp|アナウンス読み上げに最適な言語を指定|
+|message|Socket time out error after 10 seconds|アナウンスする文言|
+|headid|1,2|アナウンスの冒頭に流す定型文、settings.iniにIDが指定されている|
+|footid|1,2|アナウンス末尾に流す定型文、settings.iniにIDが指定されている|
+|addressee|1:tarou:810000000000:木村太郎:10|架電順:架電先ユーザID:電話番号:次の架電までのインターバル|
 
 ###Sample Request Url
-    curl -d 'testflg=1' -d 'hostname=example.com' -d 'operator=ichiro' -d 'calltype=1' -d 'frequency=10' 
+    curl -d 'testflg=0' -d 'hostname=hoge.example.com' -d 'operator=ichiro' -d 'calltype=1' -d 'frequency=10' 
     -d 'language=ja-jp' -d 'message=Socket timeout after 10 secondsです。' -d 'headid=2' -d 'footid=1' 
-    -d 'addressee=1:jirou:0000000:次郎:0' -d 'addressee=2:saburou:0000000:三郎:0' -d 'addressee=3:shirou:0000000:四郎:0' 
+    -d 'addressee=1:tarou:810000000000:木村太郎:0' -d 'addressee=2:baijyaku:810000000000:中村梅雀:0' -d 'addressee=3:kouji:810000000000:加藤浩二:0' 
     http://example.com/api/v1/call
 
 ###Response Field
