@@ -18,7 +18,7 @@ import define
 
 conf = ConfigParser.SafeConfigParser()
 conf.read('settings.ini')
-options_dbpath = conf.get('MySQL', 'dbpath')
+options_dbpath = conf.get('SQLite', 'dbpath')
 
 class sqlitedb():
 
@@ -75,29 +75,11 @@ class sqlitedb():
         result = self._dbmanager(query)
         return result
 
-    def getactivecall(self, eventid):
-        query = ''' select * from call where eventid == '%s' and (lateststatus == '%s' or lateststatus == '%s') order by numorder ''' %(eventid, define.ANSWER_STATUS['NORESPONSE'], define.ANSWER_STATUS['UNKNOWN_ERROR']);
+    def getactivecall(self, eventid, frequency):
+        print 'getactivecall'
+        query = ''' select * from call where eventid == '%s' and (lateststatus == '%s' or lateststatus == '%s') and (attempt < '%s') order by attempt, numorder ''' %(eventid, define.ANSWER_STATUS['NORESPONSE'], define.ANSWER_STATUS['UNKNOWN_ERROR'], frequency);
         result = self._dbmanager(query)
         return result
-
-    def gettargetedcall(self, eventid):
-        query = ''' select * from call where eventid == '%s' and (lateststatus == '%s' or lateststatus == '%s') order by numorder ''' %(eventid, define.ANSWER_STATUS['NORESPONSE'], define.ANSWER_STATUS['UNKNOWN_ERROR']);
-        result = self._dbmanager(query)
-        length = len(result)
-        #if result == '':
-        #    eventid = eventid + 1
-        return result
-
-    #def findPositiveAnswer(self, eventid):
-    #    query = ''' select * from call where eventid == '%s' and lateststatus == '%s' order by numorder ''' %(eventid, define.ANSWER_STATUS['POSITIVE']);
-    #    result = self._dbmanager(query)
-    #    return result
-
-    #def updatelateststatus(self, eventid, numorder, ghid, status):
-    #    millis = int(round(time.time() * 1000))
-    #    query = ''' update call set latesttime ='%s', lateststatus ='%s' where eventid='%s' and numorder='%s' and ghid='%s' ''' %(millis, status, eventid, numorder, ghid);
-    #    result = self._dbmanager(query)
-    #    return result
 
     def updatelateststatus(self, callsid, lateststatus):
         millis = int(round(time.time() * 1000))

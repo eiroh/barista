@@ -1,18 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import os.path
-import logging
 import string
-import time
-import uuid
-from optparse import OptionParser
 import os, sys
-import time
-from os import path
-from tornado.options import define, options
-from datetime import datetime
-import json
-import sqlite3
 from twilio.rest import TwilioRestClient
 from twilio import twiml
 import ConfigParser
@@ -22,7 +11,6 @@ import define
 conf = ConfigParser.SafeConfigParser()
 conf.read('settings.ini')
 options_from_   = conf.get('Twilio', 'from_')
-#options_to      = conf.get('Twilio', 'to')
 options_account = conf.get('Twilio', 'account')
 options_token   = conf.get('Twilio', 'token')
 options_baseurl = conf.get('Tornado', 'baseurl')
@@ -46,18 +34,7 @@ class twiliomanage(sqlitedb):
         client = TwilioRestClient(account, token)
         return client
 
-    def _paralellcall(self, eventinfo, callinfo):
-        sid = define.INITIAL_VALUE['callsid']
-        if eventinfo['testflg'] == int(define.DEBUG_FLG['off']):
-            for cinfo in callinfo:
-                call = self._get_twilio().calls.create \
-                    (to='%s' % cinfo['telno'], from_='%s' % options_from_, url='%s:%s/callresponse?eventid=%s&numorder=%s&ghid=%s' % \
-                    (options_baseurl, options_port, eventinfo['eventid'], cinfo['numorder'], cinfo['ghid']))
-                sid = call.sid
-                result = sqlitedb.insertsid(self, eventinfo['eventid'], cinfo['numorder'], cinfo['ghid'], sid)
-        return
-
-    def _sequentialcall(self, eventinfo, callinfo):
+    def _call(self, eventinfo, callinfo):
         sid = define.INITIAL_VALUE['callsid']
         if eventinfo['testflg'] == int(define.DEBUG_FLG['off']):
             for cinfo in callinfo:
@@ -71,41 +48,19 @@ class twiliomanage(sqlitedb):
     def callrequest(self, eventid):
         events = sqlitedb.geteventinfo(self, eventid)
         for event in events:
-            if event['calltype'] == int(define.CALL_TYPE['paralell']):
-                calls = sqlitedb.getactivecall(self, eventid)
-                if calls == '':
-                    result = sqlitedb.finishevent(self, event)
-                else:
-                    result = self._closeEvent(event, calls)
-                    if result == False:
-                        print 'DEBUG'
-                        #self._paralellcall(event, calls)
+            calls = sqlitedb.getactivecall(self, eventid, int(event['frequency']))
+            print calls
+            if calls == '':
+                result = sqlitedb.finishevent(self, event)
             else:
-                print 'sequential'
-                #calls = sqlitedb.gettargettedcall(self, eventid)
-                calls = sqlitedb.getactivecall(self, eventid)
-                if calls == '':
-                    result = sqlitedb.finishevent(self, event)
+                if event['calltype'] == int(define.CALL_TYPE['paralell']):
+                    print 'paralell proc'
+                    self._call(event, calls)
                 else:
-                    print calls
-                    call = calls[0] # order by sareteiru kara jyunban ni call dekiru, saidai kaisuu no kouryo ireru
-                    print call
-                    #for call in calls:
-                    #    print call['numorder'] 
-                    #result = self._closeEvent(event, calls)
-                    #if result == False:
-                    #self._sequentialcall(event, calls)
+                    print 'sequential call'
+                    call = calls[0]
+                    self._call(event, call)
         return
-
-    def _closeEvent(self, eventinfo, callinfo):
-        for call in callinfo:
-            if eventinfo['frequency'] > call['attempt']:
-                return False
-        result = sqlitedb.finishevent(self, eventinfo)
-        return True
-
-    def _closeEventSequential(self, eventinfo, callinfo):
-        return True
 
     def announce(self, eventid, numorder, ghid):
         result = sqlitedb.geteventinfo(self, eventid)
@@ -115,16 +70,14 @@ class twiliomanage(sqlitedb):
         text1 = '<?xml version="1.0" encoding="UTF-8"?>\n'
         text2 = '<Response><Gather action=\"./status/%s/%s/%s\" method=\"POST\" timeout=\"10\" numDigits=\"1\">' % \
                 (eventid.encode('utf-8'), numorder.encode('utf-8'), ghid.encode('utf-8'))
-        #text3 = '<Say voice=\"woman\" language=\"ja-jp\" loop=\"2\">'
-        text3 = '<Say voice=\"woman\" language=\"%s\" loop=\"2\">' % message
+        text3 = '<Say voice=\"woman\" language=\"%s\" loop=\"2\">' % language
         text4 = '%s%s%s' % (options_headid1, message, options_footid1)
-        text5 = '</Say></Gather><Say voice=\"woman\" language=\"ja-jp\" loop=\"2\">%s</Say></Response>' % options_response_timeout
+        text5 = '</Say></Gather><Say voice=\"woman\" language=\"%s\" loop=\"2\">%s</Say></Response>' % (language, options_response_timeout)
         result = '%s%s%s%s%s' % (text1, text2, text3, text4, text5)
         print '%s' % result
         return result
 
     def response(self, digits, eventid, numorder, ghid, callsid):
-        #eventid,numorder,ghid / callsid
         print '%s,%s,%s,%s,%s' % (digits, eventid, numorder, ghid, callsid)
         text = options_response_timeout
         if digits != '' and digits == define.PUSHED_DIGITS['positive']:
@@ -135,7 +88,7 @@ class twiliomanage(sqlitedb):
             digits = define.ANSWER_STATUS['UNKNOWN_ERROR']
             text = options_response_unknown
         head = '<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n'
-        result = '%s<Response><Say voice=\"woman\" language=\"ja-jp\" loop=\"2\">%s、%s</Say></Response>' % (head, text, options_response_end)
+        result = '%s<Response><Say voice=\"woman\" language=\"%s\" loop=\"2\">%s、%s</Say></Response>' % (head, 'ja-jp', text, options_response_end)
         dbresult = sqlitedb.updatelateststatus(self, callsid, digits)
         return result
 
