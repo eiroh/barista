@@ -24,11 +24,9 @@ options_port    = conf.get('Tornado', 'port')
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
-            (r'/call', EventHandler), # call request
+            (r'/api/v1/call', EventHandler), # call request
             (r'/callresponse', CallResponseHandler), # response announcement
-            (r'/status', StatusHandler), # digit response
             (r'/status/([^/]+)/([^/]+)/([^/]+)', StatusHandler), # digit response
-            #(r'/event', EventHandler),
         ]
         settings = dict(
             template_path=os.path.join(os.path.dirname(__file__), "template"),
@@ -135,12 +133,6 @@ class EventHandler(tornado.web.RequestHandler):
             result = main.getLog(eventid)
         self.write(result)
 
-    #def get(self):
-    #    sid = self.get_argument('sid')
-    #    tw = twiliomanage()
-    #    result = tw.get_record(sid)
-    #    self.write(result)
-
 class CallResponseHandler(tornado.web.RequestHandler):
     def post(self):
         eventid = self.get_argument('eventid')
@@ -158,13 +150,6 @@ class StatusHandler(tornado.web.RequestHandler):
         tw = twiliomanage()
         result = tw.response(Digits, eventid, numorder, ghid, CallSid)
         self.write(result)
-
-    #def get(self): # for debug use
-    #    logging.info('StatusHandler method=get')
-    #   CallSid = self.get_argument('CallSid')
-    #   tw = twilio()
-    #   result = tw.get_record(CallSid)
-    #   self.write(result)
 
 def main():
     tornado.options.parse_command_line()
