@@ -52,7 +52,7 @@ class barista():
             data = '{\"ghid\":\"%s\", \"order\":\"%s\", \"telno\":\"%s\", \"name\":\"%s\", \"numofcall\":\"%s\", \"latestcall\":\"%s\", \"status\":\"%s\"}' % \
                     (record['ghid'], record['numorder'], record['telno'], record['name'], record['attempt'], record['latesttime'], record['lateststatus'])
             calldata = calldata + data
-            print calldata.encode('utf-8')
+        #print calldata.encode('utf-8')
 
         response = '{\"success\":\"true\", \"type\":\"%s\", \"frequency\":\"%s\", \"headid\":\"%s\", \"footid\":\"%s\", \"headmsg\":\"%s\", \"announce\":\"%s\", \"footmsg\":\"%s\", \"eventstatus\":\"%s\", \"result\":[%s]}' % \
                     (result['event'][0]['calltype'], \

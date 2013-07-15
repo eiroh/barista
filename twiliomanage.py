@@ -36,8 +36,11 @@ class twiliomanage(sqlitedb):
 
     def _call(self, eventinfo, callinfo):
         sid = define.INITIAL_VALUE['callsid']
-        if eventinfo['testflg'] == int(define.DEBUG_FLG['off']):
-            for cinfo in callinfo:
+        for cinfo in callinfo:
+            print '_call:before call twilio api (%s)' % cinfo['ghid']
+            result = sqlitedb.updateattempt(self, eventinfo['eventid'], cinfo['numorder'], cinfo['ghid']) 
+            if eventinfo['testflg'] == int(define.DEBUG_FLG['off']):
+                print '_call:call twilio api'
                 call = self._get_twilio().calls.create \
                     (to='%s' % cinfo['telno'], from_='%s' % options_from_, url='%s:%s/callresponse?eventid=%s&numorder=%s&ghid=%s' % \
                     (options_baseurl, options_port, eventinfo['eventid'], cinfo['numorder'], cinfo['ghid']))
@@ -48,18 +51,26 @@ class twiliomanage(sqlitedb):
     def callrequest(self, eventid):
         events = sqlitedb.geteventinfo(self, eventid)
         for event in events:
+            if event['calltype'] == int(define.CALL_TYPE['sequential']):
+                answer = sqlitedb.findAnswer(self, eventid)
+                #print answer
+                if answer:
+                    print 'callrequest:found answer, finished'
+                    result = sqlitedb.finishevent(self, event)
+                    return             
             calls = sqlitedb.getactivecall(self, eventid, int(event['frequency']))
-            print calls
-            if calls == '':
+            if not calls:
+                print 'callrequest:calls not found, finished'
                 result = sqlitedb.finishevent(self, event)
             else:
                 if event['calltype'] == int(define.CALL_TYPE['paralell']):
-                    print 'paralell proc'
+                    print 'callrequest:paralell proc'
                     self._call(event, calls)
-                else:
-                    print 'sequential call'
-                    call = calls[0]
-                    self._call(event, call)
+                else: #define.CALL_TYPE['sequential']
+                    print 'callrequest:sequential call'
+                    seccall = []
+                    seccall.append(calls[0])
+                    self._call(event, seccall)
         return
 
     def announce(self, eventid, numorder, ghid):

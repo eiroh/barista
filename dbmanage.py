@@ -38,13 +38,13 @@ class sqlitedb():
 
     def initdb(self):
         result = os.path.exists(options_dbpath)
-        print 'initdb %s' % result
+        #print 'initdb %s' % result
         if result == False:
             query = ''' create table event (eventid INTEGER, status INTEGER, testflg INTEGER, hostname TEXT, operator TEXT, calltype INTEGER, frequency INTEGER, language TEXT, message TEXT, headid INTEGER, footid INTEGER, lastnum INTEGER) ''';
             self._dbmanager(query)
             query = ''' create table call (eventid INTEGER, numorder INTEGER, ghid TEXT, name TEXT, telno TEXT, sleep INTEGER, callid INTEGER, attempt INTEGER, latesttime TEXT, lateststatus INTEGER) ''';
             self._dbmanager(query)
-            return 'OK'
+            return
 
     def geteventid(self):
         millis = int(round(time.time() * 1000))
@@ -61,12 +61,18 @@ class sqlitedb():
         self._dbmanager(query)
         return
 
+    def updateattempt(self, eventid, numorder, ghid):
+        print 'updateattempt: eventid=%s,numorder=%s,ghid=%s' % (eventid, numorder, ghid)
+        query = ''' update call set attempt = attempt + 1 where eventid='%s' and numorder='%s' and ghid='%s' ''' %(eventid, numorder, ghid);
+        self._dbmanager(query)
+        query = ''' update event set lastnum ='%s' where eventid='%s' ''' %(numorder, eventid);
+        self._dbmanager(query)
+        return
+
     def insertsid(self, eventid, numorder, ghid, sid):
         print 'insertsid: eventid=%s,numorder=%s,ghid=%s,sid=%s' % (eventid, numorder, ghid, sid)
         millis = int(round(time.time() * 1000))
-        query = ''' update call set callid='%s', latesttime ='%s', attempt = attempt + 1 where eventid='%s' and numorder='%s' and ghid='%s' ''' %(sid, millis, eventid, numorder, ghid);
-        self._dbmanager(query)
-        query = ''' update event set lastnum ='%s' where eventid='%s' ''' %(numorder, eventid);
+        query = ''' update call set callid='%s', latesttime ='%s' where eventid='%s' and numorder='%s' and ghid='%s' ''' %(sid, millis, eventid, numorder, ghid);
         self._dbmanager(query)
         return
 
@@ -76,7 +82,6 @@ class sqlitedb():
         return result
 
     def getactivecall(self, eventid, frequency):
-        print 'getactivecall'
         query = ''' select * from call where eventid == '%s' and (lateststatus == '%s' or lateststatus == '%s') and (attempt < '%s') order by attempt, numorder ''' %(eventid, define.ANSWER_STATUS['NORESPONSE'], define.ANSWER_STATUS['UNKNOWN_ERROR'], frequency);
         result = self._dbmanager(query)
         return result
@@ -84,6 +89,12 @@ class sqlitedb():
     def updatelateststatus(self, callsid, lateststatus):
         millis = int(round(time.time() * 1000))
         query = ''' update call set latesttime ='%s', lateststatus ='%s' where callid='%s' ''' %(millis, lateststatus, callsid);
+        result = self._dbmanager(query)
+        return result
+
+    def updatelateststatusfortest(self, ghid, lateststatus):
+        millis = int(round(time.time() * 1000))
+        query = ''' update call set latesttime ='%s', lateststatus ='%s' where ghid='%s' ''' %(millis, lateststatus, ghid);
         result = self._dbmanager(query)
         return result
 
@@ -109,3 +120,12 @@ class sqlitedb():
         callresult = self._dbmanager(query)
         return dict(event=eventresult,call=callresult)
 
+    def findAnswer(self, eventid):
+        query = ''' select * from call where eventid == '%s' and (lateststatus == '%s' or lateststatus == '%s') order by attempt, numorder ''' %(eventid, define.ANSWER_STATUS['POSITIVE'], define.ANSWER_STATUS['NEGATIVE']);
+        result = self._dbmanager(query)
+        return result
+
+    def gettestevent(self):
+        query = ''' select eventid from event where operator = 'testuser' ''';
+        result = self._dbmanager(query)
+        return result

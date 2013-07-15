@@ -9,63 +9,99 @@ import ConfigParser
 from twiliomanage import twiliomanage
 import sys
 import define
+from barista import barista
 
 conf = ConfigParser.SafeConfigParser()
 conf.read('settings.ini')
 
-def main(tid):
-    if tid == '1':
+def makedata(type):
+    calltype = int(define.CALL_TYPE['sequential'])
+    if type == 'paralell':
+        calltype = int(define.CALL_TYPE['paralell'])
+    testflg = int(define.DEBUG_FLG['on'])
+    hostname = 'test.example.com'
+    operator = 'testuser'
+    #calltype = int(define.CALL_TYPE['paralell'])
+    #calltype = int(define.CALL_TYPE['sequential'])
+    frequency = 3
+    language = 'ja-jp'
+    message = 'Socket timeout after 10 secondsです'
+    headid = 1
+    footid = 1
+
+    addressee = []
+    tmp = '1:tarou:810000000000:木村太郎:0'
+    addressee.append(tmp)
+    tmp = '2:baijyaku:810000000000:中村梅雀:0'
+    addressee.append(tmp)
+    tmp = '3:kouji:810000000000:加藤浩二:0'
+    addressee.append(tmp)
+
+    tw = twiliomanage()
+    eventid = tw.geteventid()
+    status = define.EVENT_STATUS['WAITING']
+    lastnum = 0
+    tw.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum)
+    for record in addressee:
+        print record
+        param = record.split(':')
+        numorder = param[0]
+        ghid = param[1]
+        telno = param[2]
+        name = param[3]
+        sleep = param[4]
+        callid = 0
+        attempt = 0
+        latesttime = 0
+        lateststatus = define.ANSWER_STATUS['NORESPONSE']
+        tw.callregister(eventid, numorder, ghid, name, telno, sleep, callid, attempt, latesttime, lateststatus)
+    print 'eventid = %s' % eventid
+
+def activate():
+    activate_events()
+    return
+
+def updatestatus():
+    db = sqlitedb()
+    db.updatelateststatusfortest('baijyaku',2)
+    return
+
+def activate_events():
+    db = sqlitedb()
+    eventrec = db.getactiveevent()
+    for event in eventrec:
+        print 'activate_events:found active events %s' % event['eventid']
         tw = twiliomanage()
-        tw.initdb()
-        #testflg, hostname, operator, calltype, frequency, language, message, headid, footid, addressee
+        result = tw.callrequest(event['eventid'])
+    return
 
-        testflg = 1
-        hostname = 'test.example.com'
-        operator = 'testuser'
-        calltype = 1
-        frequency = 2
-        language = 'ja-jp'
-        message = 'Socket timeout after 10 secondsです'
-        headid = 1
-        footid = 1
-
-        addressee = []
-        tmp = '1:tarou:810000000000:木村太郎:0'
-        addressee.append(tmp)
-        tmp = '2:baijyaku:810000000000:中村梅雀:0'
-        addressee.append(tmp)
-        #print addressee
-
-        tw = twiliomanage()
-        eventid = tw.geteventid()
-        status = define.EVENT_STATUS['WAITING']
-        lastnum = 0
-        tw.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum)
-        for record in addressee:
-            print record
-            param = record.split(':')
-            numorder = param[0]
-            ghid = param[1]
-            telno = param[2]
-            name = param[3]
-            sleep = param[4]
-            callid = 0
-            attempt = 0
-            latesttime = 0
-            lateststatus = define.ANSWER_STATUS['NORESPONSE']
-            tw.callregister(eventid, numorder, ghid, name, telno, sleep, callid, attempt, latesttime, lateststatus)
-
-        db = sqlitedb()
-        eventrec = db.getactiveevent()
-        for event in eventrec:
-            print event['eventid']
-            tw = twiliomanage()
-            result = tw.callrequest(event['eventid'])
+def getlog():
+    db = sqlitedb()
+    eventids = db.gettestevent()
+    #print eventids
+    main = barista()
+    result = main.getLog(eventids[0]['eventid'])
+    print result.encode('utf-8')
 
 if __name__ == '__main__':
 
     argvs = sys.argv
     argc = len(argvs)
-    if (argc != 2):
-        print 'Usage: You should specify 1 parameter'
-    main(argvs[1])
+    tw = twiliomanage()
+    tw.initdb()
+    if argvs[1] == 'makedata':
+        if (argc == 3):
+            if argvs[2] == 'sequential' or argvs[2] == 'paralell':
+                makedata(argvs[2])
+            else:
+                print 'specify sequential/paralell as 2nd parameter'
+        else:
+            print 'needs 2 parameteres'
+    elif argvs[1] == 'activate':
+        activate()
+    elif argvs[1] == 'updatestatus':
+        updatestatus()
+    elif argvs[1] == 'getlog':
+        getlog()
+    else:
+        print 'unknown method'
