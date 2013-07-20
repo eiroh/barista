@@ -123,10 +123,10 @@ Baristaは架電web-apiです。
 ####answer
 
 |ID|意味|備考|
-|:--:|:-----:|:-:|
-|1|肯定的な回答|-|
-|2|否定的な回答|-|
-|3|回答無し|-|
+|:--:|:-----:|
+|1|肯定的な回答|
+|2|否定的な回答|
+|3|回答無し|
 
 ###Error Code
 
@@ -153,6 +153,7 @@ Baristaは架電web-apiです。
 |headid|INTEGER|アナウンス冒頭に流す定型文のID|
 |footid|INTEGER|アナウンス末尾に流す定型文のID|
 |lastnum|INTEGER|現在架電している人の架電順|
+|latesttime|TEXT|最後に処理した時間|
 
 ###call table
 |name|type|meaning|
