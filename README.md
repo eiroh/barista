@@ -20,14 +20,14 @@ Baristaは架電web-apiです。
 |message|Socket time out error after 10 seconds|アナウンスする文言|
 |headid|1,2|アナウンスの冒頭に流す定型文、settings.iniに定義したIDを指定する|
 |footid|1,2|アナウンス末尾に流す定型文、settings.ini定義したIDを指定する|
-|addressee|1:tarou:810000000000:木村太郎:10|架電順:架電先ユーザID:電話番号:フラグ(未使用)|
+|addressee|1:tarou:810000000000:木村太郎:10|架電順:架電先ユーザID:電話番号:次回架電までの再短時間(秒)|
 
 ###Sample Request Url
     curl -d 'testflg=0' -d 'hostname=example.com' -d 'operator=ichiro' -d 'calltype=1' -d 'frequency=10' 
     -d 'language=ja-jp' -d 'message=Socket timeout after 10 secondsです。' -d 'headid=2' -d 'footid=1' 
-    -d 'addressee=1:tarou:810000000000:木村太郎:0' 
-    -d 'addressee=2:baijyaku:810000000000:中村梅雀:0' 
-    -d 'addressee=3:kouji:810000000000:加藤浩二:0' 
+    -d 'addressee=1:tarou:810000000000:木村太郎:120' 
+    -d 'addressee=2:baijyaku:810000000000:中村梅雀:120' 
+    -d 'addressee=3:kouji:810000000000:加藤浩二:120' 
     http://example.com/api/v1/call
 
 ###Response Field  
@@ -81,8 +81,7 @@ Baristaは架電web-apiです。
        "name":"木村太郎",
        "numofcall":"1",
        "latestcall":"1367890211",
-       "status":"1",
-       "answer":""
+       "status":""
       },
       {
        "ghid":"baijyaku",
@@ -91,8 +90,7 @@ Baristaは架電web-apiです。
        "name":"中村梅雀",
        "numofcall":"1",
        "latestcall":"1367890311",
-       "status":"1",
-       "answer":"2"
+       "status":""
       },
       {
        "ghid":"kouji",
@@ -101,8 +99,7 @@ Baristaは架電web-apiです。
        "name":"加藤浩二",
        "numofcall":"1",
        "latestcall":"1367890411",
-       "status":"1",
-       "answer":"1"
+       "status":"1"
       }
       ]
     }]
@@ -153,7 +150,6 @@ Baristaは架電web-apiです。
 |headid|INTEGER|アナウンス冒頭に流す定型文のID|
 |footid|INTEGER|アナウンス末尾に流す定型文のID|
 |lastnum|INTEGER|現在架電している人の架電順|
-|latesttime|TEXT|最後に処理した時間|
 
 ###call table
 |name|type|meaning|
@@ -163,7 +159,7 @@ Baristaは架電web-apiです。
 |ghid|TEXT|コール対象者のID|
 |name|TEXT|コール対象者の名前|
 |telno|TEXT|コール対象者の電話番号|
-|sleep|INTEGER|次の順番に指定されたコールを始めるまでに待つ時間|
+|sleep|INTEGER|次回の架電までの最短時間|
 |callid|INTEGER|架電要求毎にtwilioが発行するID|
 |attempt|INTEGER|架電回数|
 |latesttime|TEXT|最後に架電した時間|
