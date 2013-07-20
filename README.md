@@ -13,14 +13,14 @@ Baristaは架電web-apiです。
 |:--------:|:-----------:|:----------|
 |testflg|0,1|0:架電する, 1:架電しない|
 |hostname|example.com|障害中のホスト名|
-|operator|ichiro|このapiをコール元を示すID|
+|operator|ichiro|このapiのコール元を示すID|
 |calltype|1,2|1:順次コール, 2:一斉にコール|
 |frequency|1〜10|架電の最大回数|
 |language|en,ja-jp|アナウンス読み上げに最適な言語を指定|
 |message|Socket time out error after 10 seconds|アナウンスする文言|
-|headid|1,2|アナウンスの冒頭に流す定型文、settings.iniにIDが指定されている|
-|footid|1,2|アナウンス末尾に流す定型文、settings.iniにIDが指定されている|
-|addressee|1:tarou:810000000000:木村太郎:10|架電順:架電先ユーザID:電話番号:次の架電までのインターバル|
+|headid|1,2|アナウンスの冒頭に流す定型文、settings.iniに定義したIDを指定する|
+|footid|1,2|アナウンス末尾に流す定型文、settings.ini定義したIDを指定する|
+|addressee|1:tarou:810000000000:木村太郎:10|架電順:架電先ユーザID:電話番号:フラグ(未使用)|
 
 ###Sample Request Url
     curl -d 'testflg=0' -d 'hostname=example.com' -d 'operator=ichiro' -d 'calltype=1' -d 'frequency=10' 
@@ -40,11 +40,11 @@ Baristaは架電web-apiです。
     {"success":"false","error":"xxx"}
 
 ###Error Code
-|ID|type|意味|
-|:--:|:--:|:-----:|
-|1|入力エラー|-|
-|2|システムエラー|システム間の接続に失敗|
-|99|その他のシステムエラー|-|
+|ID|意味|
+|:--:|:--:|
+|1|入力エラー|
+|2|システムエラー|
+|99|その他のエラー|
 
 ##履歴取得
 ###Request Url  
