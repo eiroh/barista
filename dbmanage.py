@@ -62,7 +62,7 @@ class sqlitedb():
         return
 
     def updateattempt(self, eventid, numorder, ghid):
-        print 'updateattempt: eventid=%s,numorder=%s,ghid=%s' % (eventid, numorder, ghid)
+        #print 'updateattempt: eventid=%s,numorder=%s,ghid=%s' % (eventid, numorder, ghid)
         query = ''' update call set attempt = attempt + 1 where eventid='%s' and numorder='%s' and ghid='%s' ''' %(eventid, numorder, ghid);
         self._dbmanager(query)
         query = ''' update event set lastnum ='%s' where eventid='%s' ''' %(numorder, eventid);
@@ -98,6 +98,12 @@ class sqlitedb():
         result = self._dbmanager(query)
         return result
 
+    def updatelatesttimefortest(self, ghid):
+        millis = int(round(time.time() * 1000))
+        query = ''' update call set latesttime ='%s' where ghid='%s' ''' %(millis, ghid);
+        result = self._dbmanager(query)
+        return result
+
     def geteventinfo(self, eventid):
         query = ''' select * from event where eventid = '%s' ''' %(eventid);
         result = self._dbmanager(query)
@@ -121,7 +127,8 @@ class sqlitedb():
         return dict(event=eventresult,call=callresult)
 
     def findAnswer(self, eventid):
-        query = ''' select * from call where eventid == '%s' and (lateststatus == '%s' or lateststatus == '%s') order by attempt, numorder ''' %(eventid, define.ANSWER_STATUS['POSITIVE'], define.ANSWER_STATUS['NEGATIVE']);
+        #query = ''' select * from call where eventid == '%s' and (lateststatus == '%s' or lateststatus == '%s') order by attempt, numorder ''' %(eventid, define.ANSWER_STATUS['POSITIVE'], define.ANSWER_STATUS['NEGATIVE']);
+        query = ''' select * from call where eventid == '%s' and lateststatus == '%s' order by attempt, numorder ''' % (eventid, define.ANSWER_STATUS['POSITIVE']);
         result = self._dbmanager(query)
         return result
 

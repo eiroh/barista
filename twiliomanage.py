@@ -7,6 +7,7 @@ from twilio import twiml
 import ConfigParser
 from dbmanage import sqlitedb
 import define
+import time
 
 conf = ConfigParser.SafeConfigParser()
 conf.read('settings.ini')
@@ -37,15 +38,24 @@ class twiliomanage(sqlitedb):
     def _call(self, eventinfo, callinfo):
         sid = define.INITIAL_VALUE['callsid']
         for cinfo in callinfo:
-            print '_call:before call twilio api (%s)' % cinfo['ghid']
-            result = sqlitedb.updateattempt(self, eventinfo['eventid'], cinfo['numorder'], cinfo['ghid']) 
-            if eventinfo['testflg'] == int(define.DEBUG_FLG['off']):
-                print '_call:call twilio api'
-                call = self._get_twilio().calls.create \
-                    (to='%s' % cinfo['telno'], from_='%s' % options_from_, url='%s:%s/callresponse?eventid=%s&numorder=%s&ghid=%s' % \
-                    (options_baseurl, options_port, eventinfo['eventid'], cinfo['numorder'], cinfo['ghid']))
-                sid = call.sid
-                result = sqlitedb.insertsid(self, eventinfo['eventid'], cinfo['numorder'], cinfo['ghid'], sid)
+            #print "_call:latesttime=%s" % cinfo['latesttime']
+            millis = int(round(time.time() * 1000))
+            diff = millis - int(cinfo['latesttime'])
+            sleep = "%s%s" % (cinfo['sleep'], '000')
+            print "_call:name=%s, dbtime=%s, now=%s, diff=%s, sleep=%smsec" % (cinfo['ghid'], cinfo['latesttime'], millis, diff, sleep)
+
+            if diff < int(sleep):
+                print '_call:needs %s msec to start, skipped' % diff
+            else:
+                print '_call:before call twilio api (%s)' % cinfo['ghid']
+                result = sqlitedb.updateattempt(self, eventinfo['eventid'], cinfo['numorder'], cinfo['ghid']) 
+                if eventinfo['testflg'] == int(define.DEBUG_FLG['off']):
+                    print '_call:call twilio api'
+                    call = self._get_twilio().calls.create \
+                        (to='%s' % cinfo['telno'], from_='%s' % options_from_, url='%s:%s/callresponse?eventid=%s&numorder=%s&ghid=%s' % \
+                        (options_baseurl, options_port, eventinfo['eventid'], cinfo['numorder'], cinfo['ghid']))
+                    sid = call.sid
+                    result = sqlitedb.insertsid(self, eventinfo['eventid'], cinfo['numorder'], cinfo['ghid'], sid)
         return
 
     def callrequest(self, eventid):

@@ -30,11 +30,11 @@ def makedata(type):
     footid = 1
 
     addressee = []
-    tmp = '1:tarou:810000000000:木村太郎:0'
+    tmp = '1:tarou:810000000000:木村太郎:120'
     addressee.append(tmp)
-    tmp = '2:baijyaku:810000000000:中村梅雀:0'
+    tmp = '2:baijyaku:810000000000:中村梅雀:120'
     addressee.append(tmp)
-    tmp = '3:kouji:810000000000:加藤浩二:0'
+    tmp = '3:kouji:810000000000:加藤浩二:120'
     addressee.append(tmp)
 
     tw = twiliomanage()
@@ -63,7 +63,14 @@ def activate():
 
 def updatestatus():
     db = sqlitedb()
-    db.updatelateststatusfortest('baijyaku',2)
+    db.updatelateststatusfortest('baijyaku',1)
+    return
+
+def updatetime():
+    db = sqlitedb()
+    db.updatelatesttimefortest('tarou')
+    db.updatelatesttimefortest('baijyaku')
+    db.updatelatesttimefortest('kouji')
     return
 
 def activate_events():
@@ -101,6 +108,8 @@ if __name__ == '__main__':
         activate()
     elif argvs[1] == 'updatestatus':
         updatestatus()
+    elif argvs[1] == 'updatetime':
+        updatetime()
     elif argvs[1] == 'getlog':
         getlog()
     else:
