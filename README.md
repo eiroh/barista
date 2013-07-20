@@ -192,6 +192,12 @@ Baristaは架電web-apiです。
 1. アナウンス要求は、架電に応じなかった場合はこない。
 2. プッシュ操作の内容アナウンス要求は、プッシュ操作をしなかった場合こない。
 
+##INSTALL
+
+    pip install barista
+    path-to-barista/settings.iniを設定
+    path-to-barista/activate_event.pyが毎分起動される様crontabを設定
+
 ##AUTHOR
 
 Hidenori Suzuki
