@@ -1,0 +1,10 @@
+*.pyc
+*.pyo
+*.so
+*.class
+*~
+build/
+/dist/
+MANIFEST
+/barista.egg-info/
+.vagrant
