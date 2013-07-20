@@ -208,7 +208,7 @@ Sequentialの場合、処理終了を決定する条件は以下の通りです�
 
 ##INSTALL
 
-    pip install barista
+    これから対応する。
     path-to-barista/settings.iniを設定
     path-to-barista/activate_event.pyが毎分起動される様crontabを設定
 
