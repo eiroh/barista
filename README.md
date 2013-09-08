@@ -67,6 +67,7 @@ Baristaは架電web-apiです。
      "success":"true",
      "type":"1",
      "frequency":"10",
+     "language":"ja-jp",
      "headid":"2",
      "footid":"1",
      "headmsg":"障害を検知しました。サーバー名は、example.com。",
@@ -149,6 +150,8 @@ Baristaは架電web-apiです。
 |message|TEXT|アナウンスの本文|
 |headid|INTEGER|アナウンス冒頭に流す定型文のID|
 |footid|INTEGER|アナウンス末尾に流す定型文のID|
+|headmsg|TEXT|アナウンス冒頭の文言|
+|footmsg|TEXT|アナウンス末尾の文言|
 |lastnum|INTEGER|現在架電している人の架電順|
 
 ###call table
