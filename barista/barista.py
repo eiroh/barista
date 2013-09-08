@@ -19,11 +19,22 @@ class barista():
 
     def firstRegist(self, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, addressee):
 
+        if headid == '1':
+            headmsg = conf.get('Barista', 'headid1')
+        else:
+            headmsg = conf.get('Barista', 'headid2')
+
+        if footid == '1':
+            footmsg = conf.get('Barista', 'footid1')
+        else:
+            footmsg = conf.get('Barista', 'footid2')
+
         tw = twiliomanage()
         eventid = tw.geteventid()
         status = define.EVENT_STATUS['WAITING']
         lastnum = 0
-        tw.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum)
+        #tw.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum)
+        tw.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, headmsg, footmsg, lastnum)
         for record in addressee:
             param = record.split(':')
             numorder = param[0]
@@ -54,14 +65,15 @@ class barista():
             calldata = calldata + data
         #print calldata.encode('utf-8')
 
-        response = '{\"success\":\"true\", \"type\":\"%s\", \"frequency\":\"%s\", \"headid\":\"%s\", \"footid\":\"%s\", \"headmsg\":\"%s\", \"announce\":\"%s\", \"footmsg\":\"%s\", \"eventstatus\":\"%s\", \"result\":[%s]}' % \
+        response = '{\"success\":\"true\", \"type\":\"%s\", \"frequency\":\"%s\", \"language\":\"%s\", \"headid\":\"%s\", \"footid\":\"%s\", \"headmsg\":\"%s\", \"announce\":\"%s\", \"footmsg\":\"%s\", \"eventstatus\":\"%s\", \"result\":[%s]}' % \
                     (result['event'][0]['calltype'], \
                     result['event'][0]['frequency'], \
+                    result['event'][0]['language'], \
                     result['event'][0]['headid'], \
                     result['event'][0]['footid'], \
-                    result['event'][0]['headid'], \
+                    result['event'][0]['headmsg'], \
                     result['event'][0]['message'], \
-                    result['event'][0]['footid'], \
+                    result['event'][0]['footmsg'], \
                     result['event'][0]['status'], \
                     calldata)
         return response

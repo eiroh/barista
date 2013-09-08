@@ -88,11 +88,14 @@ class twiliomanage(sqlitedb):
         record = result[0]
         language = record['language'].encode('utf-8')
         message = record['message'].encode('utf-8')
+        headmsg = record['headmsg'].encode('utf-8')
+        footmsg = record['footmsg'].encode('utf-8')
         text1 = '<?xml version="1.0" encoding="UTF-8"?>\n'
         text2 = '<Response><Gather action=\"./status/%s/%s/%s\" method=\"POST\" timeout=\"10\" numDigits=\"1\">' % \
                 (eventid.encode('utf-8'), numorder.encode('utf-8'), ghid.encode('utf-8'))
         text3 = '<Say voice=\"woman\" language=\"%s\" loop=\"2\">' % language
-        text4 = '%s%s%s' % (options_headid1, message, options_footid1)
+        #text4 = '%s%s%s' % (options_headid1, message, options_footid1)
+        text4 = '%s%s%s' % (headmsg, message, footmsg)
         text5 = '</Say></Gather><Say voice=\"woman\" language=\"%s\" loop=\"2\">%s</Say></Response>' % (language, options_response_timeout)
         result = '%s%s%s%s%s' % (text1, text2, text3, text4, text5)
         print '%s' % result

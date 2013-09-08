@@ -13,6 +13,8 @@ from barista import barista
 
 conf = ConfigParser.SafeConfigParser()
 conf.read('settings.ini')
+options_headmsg = conf.get('Barista', 'headid1')
+options_footmsg = conf.get('Barista', 'footid1')
 
 def makedata(type):
     calltype = int(define.CALL_TYPE['sequential'])
@@ -28,6 +30,8 @@ def makedata(type):
     message = 'Socket timeout after 10 secondsです'
     headid = 1
     footid = 1
+    headmsg = options_headmsg
+    footmsg = options_footmsg
 
     addressee = []
     tmp = '1:tarou:810000000000:木村太郎:120'
@@ -41,7 +45,7 @@ def makedata(type):
     eventid = tw.geteventid()
     status = define.EVENT_STATUS['WAITING']
     lastnum = 0
-    tw.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum)
+    tw.eventregister(eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, headmsg, footmsg, lastnum)
     for record in addressee:
         print record
         param = record.split(':')

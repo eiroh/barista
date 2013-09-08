@@ -40,7 +40,7 @@ class sqlitedb():
         result = os.path.exists(options_dbpath)
         #print 'initdb %s' % result
         if result == False:
-            query = ''' create table event (eventid INTEGER, status INTEGER, testflg INTEGER, hostname TEXT, operator TEXT, calltype INTEGER, frequency INTEGER, language TEXT, message TEXT, headid INTEGER, footid INTEGER, lastnum INTEGER) ''';
+            query = ''' create table event (eventid INTEGER, status INTEGER, testflg INTEGER, hostname TEXT, operator TEXT, calltype INTEGER, frequency INTEGER, language TEXT, message TEXT, headid INTEGER, footid INTEGER, headmsg TEXT, footmsg TEXT, lastnum INTEGER) ''';
             self._dbmanager(query)
             query = ''' create table call (eventid INTEGER, numorder INTEGER, ghid TEXT, name TEXT, telno TEXT, sleep INTEGER, callid INTEGER, attempt INTEGER, latesttime TEXT, lateststatus INTEGER) ''';
             self._dbmanager(query)
@@ -51,8 +51,8 @@ class sqlitedb():
         logging.info(millis)
         return millis
  
-    def eventregister(self, eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum):
-        query = ''' insert into event (eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum) values ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s') ''' %(eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, lastnum);
+    def eventregister(self, eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, headmsg, footmsg, lastnum):
+        query = ''' insert into event (eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, headmsg, footmsg, lastnum) values ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s') ''' %(eventid, status, testflg, hostname, operator, calltype, frequency, language, message, headid, footid, headmsg, footmsg, lastnum);
         self._dbmanager(query)
         return
 
