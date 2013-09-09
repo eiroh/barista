@@ -20,7 +20,7 @@ Baristaは架電web-apiです。
 |message|Socket time out error after 10 seconds|アナウンスする文言|
 |headid|1,2|アナウンスの冒頭に流す定型文、settings.iniに定義したIDを指定する|
 |footid|1,2|アナウンス末尾に流す定型文、settings.ini定義したIDを指定する|
-|addressee|1:tarou:810000000000:木村太郎:10|架電順:架電先ユーザID:電話番号:次回架電までの再短時間(秒)|
+|addressee|1:tarou:810000000000:木村太郎:10|架電順:架電先ユーザID:電話番号:架電先ユーザの名前:次回架電までの再短時間(秒)|
 
 ###Sample Request Url
     curl -d 'testflg=0' -d 'hostname=example.com' -d 'operator=ichiro' -d 'calltype=1' -d 'frequency=10' 
