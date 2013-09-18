@@ -211,9 +211,13 @@ Sequentialの場合、処理終了を決定する条件は以下の通りです�
 
 ##INSTALL
 
-    これから対応する。
-    path-to-barista/settings.iniを設定
-    path-to-barista/activate_event.pyが毎分起動される様crontabを設定
+    $ cd barista
+    $ python bootstrap.py init
+    $ ./bin/buildout
+    $ vi ./barista/settings.ini でサーバ名やポート番号などを定義する。READMEを参照してください。
+    $ python ./bin/start_server
+    $ python ./bin/start_worker
+    # barista/activate_event.pyが毎分起動される様crontabを設定してください。
 
 ##AUTHOR
 
