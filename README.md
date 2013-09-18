@@ -168,6 +168,17 @@ Baristaは架電web-apiです。
 |latesttime|TEXT|最後に架電した時間|
 |lateststatus|INTEGER|最新の回答内容|
 
+#INSTALL
+
+    $ git clone https://github.com/hidenori-suzuki/barista.git
+    $ cd barista
+    $ python bootstrap.py init
+    $ ./bin/buildout
+    $ vi ./barista/settings.ini でサーバ名やポート番号などを定義する。READMEを参照してください。
+    $ python ./bin/start_server
+    $ python ./bin/start_worker
+    # barista/activate_event.pyが毎分起動される様crontabを設定してください。
+
 #PROCESSING
 ##処理の流れ
 1. DBにイベント情報、コール情報を書き込む。
@@ -209,17 +220,7 @@ Sequentialの場合、処理終了を決定する条件は以下の通りです�
 内部でtwilioを使用しているためtwilioサイトよりアカウントとトークンを取得する必要があります。  
 アカウントは無料で作成できます。
 
-##INSTALL
-
-    $ cd barista
-    $ python bootstrap.py init
-    $ ./bin/buildout
-    $ vi ./barista/settings.ini でサーバ名やポート番号などを定義する。READMEを参照してください。
-    $ python ./bin/start_server
-    $ python ./bin/start_worker
-    # barista/activate_event.pyが毎分起動される様crontabを設定してください。
-
-##AUTHOR
+#AUTHOR
 
 Hidenori Suzuki
 
