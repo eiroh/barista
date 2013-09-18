@@ -224,7 +224,7 @@ Sequentialの場合、処理終了を決定する条件は以下の通りです�
 
 Hidenori Suzuki
 
-##LICENSE
+#LICENSE
 Copyright &copy; 2013 Hidenori Suzuki  
 Licensed under the [Apache License, Version 2.0][Apache]
 [Apache]: http://www.apache.org/licenses/LICENSE-2.0
