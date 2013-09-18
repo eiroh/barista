@@ -8,7 +8,7 @@ from callq import callQ
 import ConfigParser
 
 conf = ConfigParser.SafeConfigParser()
-conf.read('settings.ini')
+conf.read('./barista/settings.ini')
 resqserver = conf.get('ResQ', 'server')
 resqport = conf.get('ResQ', 'port')
 

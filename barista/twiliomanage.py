@@ -10,7 +10,8 @@ import define
 import time
 
 conf = ConfigParser.SafeConfigParser()
-conf.read('settings.ini')
+#conf.read('settings.ini')
+conf.read('./barista/settings.ini')
 options_from_   = conf.get('Twilio', 'from_')
 options_account = conf.get('Twilio', 'account')
 options_token   = conf.get('Twilio', 'token')

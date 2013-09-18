@@ -17,7 +17,8 @@ import ConfigParser
 import define
 
 conf = ConfigParser.SafeConfigParser()
-conf.read('settings.ini')
+#conf.read('settings.ini')
+conf.read('./barista/settings.ini')
 options_dbpath = conf.get('SQLite', 'dbpath')
 
 class sqlitedb():

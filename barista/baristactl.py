@@ -17,7 +17,7 @@ import define
 from barista import barista
 
 conf = ConfigParser.SafeConfigParser()
-conf.read('settings.ini')
+conf.read('./barista/settings.ini')
 options_baseurl = conf.get('Tornado', 'baseurl')
 options_port    = conf.get('Tornado', 'port')
 

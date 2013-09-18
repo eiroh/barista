@@ -11,7 +11,7 @@ from pyres import ResQ
 from eventq import eventQ
 
 conf = ConfigParser.SafeConfigParser()
-conf.read('settings.ini')
+conf.read('./barista/settings.ini')
 options_resqserver = conf.get('ResQ', 'server')
 options_resqport   = conf.get('ResQ', 'port')
 

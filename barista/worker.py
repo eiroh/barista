@@ -5,5 +5,5 @@ from pyres.worker import Worker
 from eventq import eventQ
 from callq import callQ
 
-setup_logging(procname='barista', log_level='info', filename='/tmp/barista.log')
+setup_logging(procname='barista', log_level='INFO', filename='/tmp/barista.log')
 Worker.run(["baristaEvent", "baristaCall"])
