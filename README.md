@@ -174,7 +174,7 @@ Baristaは架電web-apiです。
     $ cd barista
     $ python bootstrap.py init
     $ ./bin/buildout
-    $ vi ./barista/settings.ini でサーバ名やポート番号などを定義する。READMEを参照してください。
+    $ vi ./barista/settings.ini でサーバ名やポート番号などを定義。
     $ python ./bin/start_server
     $ python ./bin/start_worker
     # barista/activate_event.pyが毎分起動される様crontabを設定してください。
