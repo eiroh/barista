@@ -184,6 +184,13 @@ settings.iniのbaseurlとportには、twilioからのhttpアクセスが可能�
 そのため、デフォルト値のlocalhostのままで動かすと架電は失敗します。  
 また、ファイアウォールがある環境ではACLの設定変更が必要になりますのでご注意ください。  
 
+|PARAMETERS|VALUE|
+|:-----:|:-----:|
+|DIRECTION|IN|
+|SOURCE|baristaを動作させるホスト|
+|DESTINATION|ANY|
+
+
 
 #PROCESSING
 ##処理の流れ
