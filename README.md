@@ -168,7 +168,7 @@ Baristaは架電web-apiです。
 |latesttime|TEXT|最後に架電した時間|
 |lateststatus|INTEGER|最新の回答内容|
 
-#INSTALL
+#INSTALLATION
 
     $ git clone git://github.com/hidenori-suzuki/barista.git
     $ cd barista
