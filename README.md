@@ -170,7 +170,7 @@ Baristaは架電web-apiです。
 
 #INSTALL
 
-    $ git clone https://github.com/hidenori-suzuki/barista.git
+    $ git clone git://github.com/hidenori-suzuki/barista.git
     $ cd barista
     $ python bootstrap.py init
     $ ./bin/buildout
