@@ -175,6 +175,11 @@ Baristaは架電APIです。システム障害時の連絡に必要な機能を�
 
 #INSTALLATION
 
+Python2.6/2.7環境でお使いください。virtualenvを使う場合は
+
+    $ virtualenv --no-setuptools .
+    $ source ./bin/activate
+
     $ git clone git://github.com/hidenori-suzuki/barista.git
     $ cd barista
     $ python ./bootstrap.py
