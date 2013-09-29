@@ -179,6 +179,12 @@ Baristaは架電web-apiです。
     $ python ./bin/start_worker
     # barista/activate_event.pyが毎分起動される様crontabを設定してください。
 
+settings.iniのbaseurlとportには、twilioからのhttpアクセスが可能なものを指定してください。  
+このurl,portは、baristaに対する架電要求、履歴取得要求の他、twilioから、読み上げ文言の取得、架電先の回答内容の送信にも使われます。  
+そのため、デフォルト値のlocalhostのままで動かすと架電は失敗します。  
+また、ファイアウォールがある環境ではACLの設定変更が必要になりますのでご注意ください。  
+
+
 #PROCESSING
 ##処理の流れ
 1. DBにイベント情報、コール情報を書き込む。
