@@ -7,7 +7,7 @@ Baristaは架電web-apiです。
 #Description
 ##架電する
 ###Request Url
-    http://example.com/api/v1/call（POSTメソッド）
+    http://example.com:8080/api/v1/call（POSTメソッド）
 ###Request Parameters
 |パラメータ|値/例|詳細|
 |:--------:|:-----------:|:----------|
@@ -28,7 +28,7 @@ Baristaは架電web-apiです。
     -d 'addressee=1:tarou:810000000000:木村太郎:120' 
     -d 'addressee=2:baijyaku:810000000000:中村梅雀:120' 
     -d 'addressee=3:kouji:810000000000:加藤浩二:120' 
-    http://example.com/api/v1/call
+    http://example.com:8080/api/v1/call
 
 ###Response Field  
 
@@ -49,7 +49,7 @@ Baristaは架電web-apiです。
 ##履歴取得
 ###Request Url  
 
-    http://example.com/api/v1/call（GETメソッド）  
+    http://example.com:8080/api/v1/call（GETメソッド）  
 
 ###Request Parameters
 |パラメータ|値/例|詳細|
@@ -58,7 +58,7 @@ Baristaは架電web-apiです。
 
 ###Sample Request Url  
 
-    curl http://example.com/api/v1/call?eventid=xxxxxxxxxxxxxxxxxxxxxxx
+    curl http://example.com:8080/api/v1/call?eventid=xxxxxxxxxxxxxxxxxxxxxxx
 ###Response Field
 
 処理成功時のレスポンス
@@ -239,7 +239,7 @@ Sequentialの場合、処理終了を決定する条件は以下の通りです�
 必要であれば再度イベント登録を行って下さい。
 
 内部でtwilioを使用しているためtwilioサイトよりアカウントとトークンを取得する必要があります。  
-アカウントは無料で作成でき、数コールは無料で利用できます。
+クレジットカードの登録をしなくても数回は無料で利用できます。
 
 #AUTHOR
 
