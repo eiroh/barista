@@ -187,10 +187,18 @@ settings.iniのbaseurlとportには、twilioからのhttpアクセスが可能�
 |PARAMETERS|VALUE|
 |:-----:|:-----:|
 |DIRECTION|IN|
-|SOURCE|baristaを動作させるホスト|
-|DESTINATION|ANY|
+|SERVICE|settings.iniのbaseurlで指定した値|
+|PORT NUMBER|settings.iniのportで指定した値|
+|SOURCE|api.twilio.comのipアドレス|
+|DESTINATION|settings.iniのbaseurlで指定したホストのipアドレスまたはVIP|
 
-
+|PARAMETERS|VALUE|
+|:-----:|:-----:|
+|DIRECTION|OUT|
+|SERVICE|https|
+|PORT NUMBER|443|
+|SOURCE|settings.iniのbaseurlで指定したホストのipアドレス|
+|DESTINATION|api.twilio.comのアドレス|
 
 #PROCESSING
 ##処理の流れ
