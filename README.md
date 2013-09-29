@@ -185,7 +185,7 @@ settings.iniのbaseurlとportには、twilioからのhttpアクセスが可能�
 また、ファイアウォールがある環境ではACLの設定変更が必要になりますのでご注意ください。  
 
 |PARAMETERS|VALUE|
-|:-----:|:-----:|
+|:-----:|:-----|
 |DIRECTION|IN|
 |SERVICE|settings.iniのbaseurlで指定した値|
 |PORT NUMBER|settings.iniのportで指定した値|
@@ -193,12 +193,12 @@ settings.iniのbaseurlとportには、twilioからのhttpアクセスが可能�
 |DESTINATION|settings.iniのbaseurlで指定したホストのipアドレスまたはVIP|
 
 |PARAMETERS|VALUE|
-|:-----:|:-----:|
+|:-----:|:-----|
 |DIRECTION|OUT|
 |SERVICE|https|
 |PORT NUMBER|443|
-|SOURCE|settings.iniのbaseurlで指定したホストのipアドレス|
-|DESTINATION|api.twilio.comのアドレス|
+|SOURCE|settings.iniのbaseurlで指定したホストのipアドレス　　　　|
+|DESTINATION|api.twilio.comのipアドレス|
 
 #PROCESSING
 ##処理の流れ
