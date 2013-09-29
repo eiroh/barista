@@ -177,7 +177,7 @@ Baristaは架電web-apiです。
     $ vi ./barista/settings.ini でサーバ名やポート番号などを定義。
     $ python ./bin/start_server
     $ python ./bin/start_worker
-    # barista/activate_event.pyが毎分起動される様crontabを設定してください。
+    # barista/activate_event.pyが5分毎に起動される様crontabを設定してください。
 
 settings.iniのbaseurlとportには、twilioからのhttpアクセスが可能なものを指定してください。  
 このurl,portは、baristaに対する架電要求、履歴取得要求の他、twilioから、読み上げ文言の取得、架電先の回答内容の送信にも使われます。  
