@@ -172,7 +172,7 @@ Baristaは架電web-apiです。
 
     $ git clone git://github.com/hidenori-suzuki/barista.git
     $ cd barista
-    $ python bootstrap.py init
+    $ python ./bootstrap.py
     $ ./bin/buildout
     $ vi ./barista/settings.ini でサーバ名やポート番号などを定義。
     $ python ./bin/start_server
