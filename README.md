@@ -175,10 +175,7 @@ Baristaは架電APIです。システム障害時の連絡に必要な機能を�
 
 #INSTALLATION
 
-Python2.6/2.7環境でお使いください。virtualenvを使う場合は
-
-    $ virtualenv --no-setuptools .
-    $ source ./bin/activate
+pipの設定がされたPython2.6/2.7環境でお使いください。
 
     $ git clone git://github.com/hidenori-suzuki/barista.git
     $ cd barista
@@ -188,6 +185,11 @@ Python2.6/2.7環境でお使いください。virtualenvを使う場合は
     $ python ./bin/start_server
     $ python ./bin/start_worker
     # barista/activate_event.pyが5分毎に起動される様crontabを設定してください。
+    
+virtualenvを使う場合は初めに以下を行います。
+
+    $ virtualenv .
+    $ source ./bin/activate
 
 settings.iniのbaseurlとportには、twilioからのhttpアクセスが可能なものを指定してください。  
 このurl,portは、baristaに対する架電要求、履歴取得要求の他、twilioから、読み上げ文言の取得、架電先の回答内容の送信にも使われます。  
