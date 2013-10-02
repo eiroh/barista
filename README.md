@@ -225,7 +225,7 @@ settings.iniのbaseurlとportには、twilioからのhttpアクセスが可能�
 1. WAITINGでイベント登録がされる。
 2. 全員に架電を行う。
 3. cronがWAITINGのイベントをactivateする。
-4. 最大架電回数が超えた場合、全員から回答が得られtる場合はFINISHED。
+4. 最大架電回数が超えた場合、全員から回答が得られた場合はFINISHED。
 5. それ以外の場合は架電を行う。以降3,4,5を繰り返す。
 
 ###Sequential（順次）
